@@ -9,7 +9,7 @@ const ITEMS = [
   { id: "blackjack", label: "Blackjack", icon: Layers, route: "/blackjack" },
   { id: "crash", label: "Crash", icon: Rocket, route: "/crash" },
   { id: "jackpot", label: "Jackpot", icon: Trophy },
-  { id: "slots", label: "Slots", icon: Sparkles, scroll: "slots" },
+  { id: "slots", label: "Slots", icon: Sparkles, route: "/sweet-bonanza" },
   { id: "cases", label: "Cases", icon: Package },
   { id: "matches", label: "Esports", icon: Swords, scroll: "matches" },
 ];

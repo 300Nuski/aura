@@ -1,17 +1,19 @@
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Sparkles, ChevronLeft, ChevronRight, Play } from "lucide-react";
 
 const SLOTS = [
   { name: "Gates of Olympus", provider: "Pragmatic", rtp: "96.50%", mult: "5000x", tag: "HOT", tagCls: "bg-[#FF3838]", grad: "from-[#FFD32A] via-[#8C3BFF] to-[#3d1a75]" },
-  { name: "Sweet Bonanza", provider: "Pragmatic", rtp: "96.48%", mult: "21100x", tag: "FEATURE", tagCls: "bg-[#8C3BFF]", grad: "from-[#FF6B9D] via-[#c0457e] to-[#5c1f4e]" },
+  { name: "Sweet Bonanza", provider: "Pragmatic", rtp: "96.48%", mult: "21100x", tag: "SPIELBAR", tagCls: "bg-mint text-black", grad: "from-[#FF6B9D] via-[#c0457e] to-[#5c1f4e]", route: "/sweet-bonanza" },
   { name: "Book of Dead", provider: "Play'n GO", rtp: "96.21%", mult: "5000x", tag: "CLASSIC", tagCls: "bg-[#2E7CFF]", grad: "from-[#FF9F1C] via-[#a3540e] to-[#3d2408]" },
   { name: "Razor Shark", provider: "Push Gaming", rtp: "96.70%", mult: "50000x", tag: "HIGH VOL", tagCls: "bg-[#00D2D3] text-black", grad: "from-[#00D2D3] via-[#0e7a9c] to-[#07334a]" },
   { name: "San Quentin", provider: "Nolimit City", rtp: "96.03%", mult: "150000x", tag: "EXTREME", tagCls: "bg-[#FF4757]", grad: "from-[#FF4757] via-[#8c1d33] to-[#330a18]" },
 ];
 
 const TopSlots = () => {
+  const navigate = useNavigate();
   const scrollRef = useRef(null);
   const scrollBy = (dir) => scrollRef.current?.scrollBy({ left: dir * 420, behavior: "smooth" });
 
@@ -40,7 +42,7 @@ const TopSlots = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.5, delay: i * 0.06 }}
-            onClick={() => toast.info(`${s.name} — Slot-Demo folgt in Kürze.`)}
+            onClick={() => (s.route ? navigate(s.route) : toast.info(`${s.name} — Slot-Demo folgt in Kürze.`))}
             className="group relative shrink-0 w-44 h-60 rounded-2xl overflow-hidden snap-start text-left border border-night-border hover:border-mint/50 transition-colors duration-300"
             data-testid={`slot-card-${i}`}
           >

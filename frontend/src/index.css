@@ -137,6 +137,34 @@
     scrollbar-color: #262c3d transparent;
 }
 
+@keyframes candy-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-7px) rotate(-0.4deg); }
+    40% { transform: translateX(7px) rotate(0.4deg); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+.animate-candy-shake {
+    animation: candy-shake 0.5s ease-in-out;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.15; transform: scale(0.6); }
+    50% { opacity: 0.9; transform: scale(1.2); }
+}
+.animate-twinkle {
+    animation: twinkle 2.6s ease-in-out infinite;
+}
+
+.winning-cell svg {
+    animation: winner-pulse 0.45s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
+}
+@keyframes winner-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.14) rotate(-3deg); }
+}
+
 @keyframes flame-flicker {
     0%, 100% { transform: scaleX(1) scaleY(1); opacity: 0.9; }
     50% { transform: scaleX(1.32) scaleY(0.85); opacity: 1; }

@@ -15,6 +15,7 @@ import RoulettePage from "@/pages/RoulettePage";
 import BlackjackPage from "@/pages/BlackjackPage";
 import CrashPage from "@/pages/CrashPage";
 import AdminPage from "@/pages/AdminPage";
+import SweetBonanzaPage from "@/pages/SweetBonanzaPage";
 
 const Shell = () => {
   const { user } = useAuth();
@@ -66,6 +67,7 @@ const Shell = () => {
             <Route path="/blackjack" element={<BlackjackPage balance={balance} setBalance={setBalance} />} />
             <Route path="/crash" element={<CrashPage balance={balance} setBalance={setBalance} />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/sweet-bonanza" element={<SweetBonanzaPage balance={balance} setBalance={setBalance} />} />
           </Routes>
         </div>
       </main>

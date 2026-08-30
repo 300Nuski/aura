@@ -35,8 +35,15 @@
 
 ## Admin & Verlauf (Juli 2026)
 - Admin-Panel (/admin, nur role=admin): Nutzerliste mit Stats, Guthaben inline editierbar, Rollen-Toggle (Admin machen/entfernen, Selbst-Degradierung blockiert), 403 für Nicht-Admins
-- Runden-Historie: POST /api/rounds (Roulette/Blackjack/Crash loggen jede Runde), GET /api/rounds/mine — im Konto-Menü als „Letzte Runden" mit Spiel, Multi & Auszahlung
+- Runden-Historie: POST /api/rounds (Roulette/Blackjack/Crash/Sweet Bonanza loggen jede Runde), GET /api/rounds/mine — im Konto-Menü als „Letzte Runden" mit Spiel, Multi & Auszahlung
 - Admin-Links in Topbar & Sidebar nur für Admins sichtbar
+
+## Sweet Bonanza Slot (Juli 2026)
+- /sweet-bonanza: 6×5 Candy-Grid, Scatter-Pays (8+ gleiche Symbole überall), Tumble-Mechanik mit Drop-in-Kaskaden, Gewinner-Pulsieren
+- 7 handgezeichnete SVG-Candy-Symbole (Trauben, Melone, Pflaume, blaue/lila Bonbons, Herz, Lolli-Scatter) + Regenbogen-Bombe
+- Freispiele: 4+ Lollis → 10 FS (+5 Retrigger), Bomben ×2–×100 multiplikieren Rundengewinn
+- Candy-Design: Zuckerstangen-Rahmen, Lila-Verlauf, Twinkle-Sparkles, Screen-Shake + Splash bei Big Win (≥10×), Gewinn-Sounds
+- Verlinkt: Sidebar „Slots", Top-Slots-Karte „Sweet Bonanza" (Tag SPIELBAR)
 
 ## Backlog / nächste Schritte
 - P1: PvP-Duelle & Jackpot-Tickets als echte Minispiele
