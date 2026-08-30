@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { animate } from "framer-motion";
-import { Flame, Bell, Coins, Plus } from "lucide-react";
+import { motion, AnimatePresence, animate } from "framer-motion";
+import { Flame, Bell, Coins, Plus, LogOut } from "lucide-react";
+import { useAuth } from "@/auth/AuthContext";
 
 const NAVS = [
   { id: "lobby", label: "Lobby", route: "/" },
@@ -26,10 +27,16 @@ const AnimatedBalance = ({ value }) => {
   );
 };
 
-const Topbar = ({ balance, onDeposit }) => {
+const Topbar = ({ balance, onDeposit, onLogin }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
   const active = NAVS.find((n) => n.route === location.pathname)?.id ?? "";
+
+  const initials = user?.name
+    ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()
+    : "";
 
   return (
     <header
@@ -79,12 +86,57 @@ const Topbar = ({ balance, onDeposit }) => {
           <Bell className="w-4 h-4 text-slate-300" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-mint animate-pulse-dot" />
         </button>
-        <div className="relative" data-testid="topbar-avatar">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#8C3BFF] to-[#2E7CFF] flex items-center justify-center font-display font-bold text-sm">
-            DU
+
+        {user ? (
+          <div className="relative">
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              className="relative block"
+              data-testid="topbar-avatar"
+              aria-label="Konto-Menü"
+            >
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#8C3BFF] to-[#2E7CFF] flex items-center justify-center font-display font-bold text-sm">
+                {initials || "?"}
+              </div>
+              <span className="absolute -bottom-1 -right-1 rounded-full bg-mint text-black text-[9px] font-mono font-bold px-1.5 py-px">42</span>
+            </button>
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                  transition={{ duration: 0.18 }}
+                  className="absolute right-0 top-12 w-60 rounded-xl bg-night-card border border-night-border shadow-[0_24px_50px_rgba(0,0,0,0.55)] p-4 z-50"
+                  data-testid="account-menu"
+                >
+                  <p className="font-display font-bold text-sm truncate" data-testid="account-name">{user.name}</p>
+                  <p className="text-xs text-slate-500 truncate mb-1">{user.email}</p>
+                  {user.role === "admin" && (
+                    <span className="inline-block rounded bg-[#8C3BFF]/20 border border-[#8C3BFF]/40 text-[#c39aff] text-[9px] font-mono font-bold px-1.5 py-0.5 mb-1">ADMIN</span>
+                  )}
+                  <div className="h-px bg-night-bordersub my-3" />
+                  <button
+                    onClick={() => { setMenuOpen(false); logout(); }}
+                    className="w-full rounded-lg bg-night-elevated border border-night-border text-slate-300 text-xs font-bold py-2.5 inline-flex items-center justify-center gap-2 hover:border-[#FF4757]/60 hover:text-[#FF6B7A] transition-colors duration-300"
+                    data-testid="logout-btn"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Abmelden
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-          <span className="absolute -bottom-1 -right-1 rounded-full bg-mint text-black text-[9px] font-mono font-bold px-1.5 py-px">42</span>
-        </div>
+        ) : (
+          <button
+            onClick={onLogin}
+            className="rounded-full border border-mint/60 text-mint text-[13px] font-bold px-4 md:px-5 py-2.5 hover:bg-mint hover:text-black transition-colors duration-300"
+            data-testid="topbar-login-btn"
+          >
+            Anmelden
+          </button>
+        )}
       </div>
     </header>
   );

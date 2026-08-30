@@ -36,5 +36,11 @@
 ## Backlog / nächste Schritte
 - P1: PvP-Duelle & Jackpot-Tickets als echte Minispiele
 - P1: Crash Auto-Modus (Auto-Bet Wiederholung)
-- P2: Gewinn-Sounds (AudioContext)
+- P2: Passwort-Reset per E-Mail (Resend)
 - P2: Echtes Backend für Chat/Leaderboard
+
+## Auth (Juli 2026)
+- E-Mail/Passwort-Auth: FastAPI + JWT (httpOnly Cookies, access 15 Min / refresh 7 Tage), bcrypt-Hashes, MongoDB users-Collection (unique Index auf email)
+- Endpunkte: register/login/logout/me + GET/PUT /api/auth/balance (Guthaben pro Konto persistent)
+- Frontend: AuthContext, AuthModal (Login/Registrieren-Tabs), Topbar mit Anmelden-Button bzw. Konto-Menü (Abmelden), Guthaben-Sync (debounced PUT)
+- Seed-Konten: admin@auraroyale.de / AuraAdmin2026! · demo@auraroyale.de / Demo2026!
