@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence, animate } from "framer-motion";
-import { Flame, Bell, Coins, Plus, LogOut } from "lucide-react";
+import { Flame, Bell, Coins, Plus, LogOut, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/auth/AuthContext";
+import api from "@/lib/api";
 
 const NAVS = [
   { id: "lobby", label: "Lobby", route: "/" },
@@ -10,6 +11,8 @@ const NAVS = [
   { id: "blackjack", label: "Blackjack", route: "/blackjack" },
   { id: "crash", label: "Crash", route: "/crash" },
 ];
+
+const GAME_COLORS = { Roulette: "#E84118", Blackjack: "#00E575", Crash: "#FF9F1C" };
 
 const AnimatedBalance = ({ value }) => {
   const [display, setDisplay] = useState(value);
@@ -32,7 +35,14 @@ const Topbar = ({ balance, onDeposit, onLogin }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [rounds, setRounds] = useState([]);
   const active = NAVS.find((n) => n.route === location.pathname)?.id ?? "";
+
+  useEffect(() => {
+    if (menuOpen && user) {
+      api.get("/rounds/mine?limit=5").then((r) => setRounds(r.data)).catch(() => setRounds([]));
+    }
+  }, [menuOpen, user]);
 
   const initials = user?.name
     ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()
@@ -66,6 +76,18 @@ const Topbar = ({ balance, onDeposit, onLogin }) => {
               {n.label}
             </button>
           ))}
+          {user?.role === "admin" && (
+            <button
+              onClick={() => navigate("/admin")}
+              className={`rounded-full px-4 py-2 text-[13px] font-semibold inline-flex items-center gap-1.5 transition-colors duration-300 ${
+                location.pathname === "/admin" ? "bg-[#8C3BFF]/25 text-[#c39aff]" : "text-[#c39aff]/70 hover:text-[#c39aff] hover:bg-night-card"
+              }`}
+              data-testid="topbar-nav-admin"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Admin
+            </button>
+          )}
         </nav>
       </div>
 
@@ -107,7 +129,7 @@ const Topbar = ({ balance, onDeposit, onLogin }) => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.96 }}
                   transition={{ duration: 0.18 }}
-                  className="absolute right-0 top-12 w-60 rounded-xl bg-night-card border border-night-border shadow-[0_24px_50px_rgba(0,0,0,0.55)] p-4 z-50"
+                  className="absolute right-0 top-12 w-72 rounded-xl bg-night-card border border-night-border shadow-[0_24px_50px_rgba(0,0,0,0.55)] p-4 z-50"
                   data-testid="account-menu"
                 >
                   <p className="font-display font-bold text-sm truncate" data-testid="account-name">{user.name}</p>
@@ -115,6 +137,27 @@ const Topbar = ({ balance, onDeposit, onLogin }) => {
                   {user.role === "admin" && (
                     <span className="inline-block rounded bg-[#8C3BFF]/20 border border-[#8C3BFF]/40 text-[#c39aff] text-[9px] font-mono font-bold px-1.5 py-0.5 mb-1">ADMIN</span>
                   )}
+
+                  <div className="h-px bg-night-bordersub my-3" />
+                  <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-500 mb-2">Letzte Runden</p>
+                  <div className="space-y-1.5 mb-3 max-h-40 overflow-y-auto chat-scroll" data-testid="account-rounds">
+                    {rounds.length === 0 && (
+                      <p className="text-xs text-slate-600 py-1" data-testid="account-rounds-empty">Noch keine Runden gespielt.</p>
+                    )}
+                    {rounds.map((r, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs" data-testid="account-round-row">
+                        <span className="flex items-center gap-2 font-semibold text-slate-300">
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: GAME_COLORS[r.game] || "#64748B" }} />
+                          {r.game}
+                          <span className="font-mono text-slate-500">{r.mult > 0 ? `${r.mult}x` : "—"}</span>
+                        </span>
+                        <span className={`font-mono font-bold ${r.payout > r.bet ? "text-mint" : r.payout > 0 ? "text-slate-300" : "text-slate-600"}`}>
+                          {r.payout > 0 ? `+${r.payout.toLocaleString("de-DE")}` : `-${r.bet.toLocaleString("de-DE")}`} €
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
                   <div className="h-px bg-night-bordersub my-3" />
                   <button
                     onClick={() => { setMenuOpen(false); logout(); }}

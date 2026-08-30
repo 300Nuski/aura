@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Plus, Hand, RefreshCcw, Coins } from "lucide-react";
 import { playWinChime } from "@/lib/sounds";
+import { recordRound } from "@/lib/rounds";
 
 const SUITS = [
   { s: "♠", red: false },
@@ -77,6 +78,8 @@ const BlackjackGame = ({ balance, setBalance }) => {
     setDeck(deckRest);
     setDealer(d);
     setPhase("done");
+    const outcome = ps > 21 ? { mult: 0, payout: 0 } : ds > 21 || ps > ds ? { mult: 2, payout: currentBet * 2 } : ps === ds ? { mult: 1, payout: currentBet } : { mult: 0, payout: 0 };
+    recordRound({ game: "Blackjack", bet: currentBet, ...outcome });
     if (ps > 21) {
       setMessage(`Überkauft mit ${ps}. Dealer gewinnt.`);
       setStreak(0);
@@ -121,6 +124,7 @@ const BlackjackGame = ({ balance, setBalance }) => {
       setMessage("Blackjack! Auszahlung 3:2.");
       setStreak((s) => s + 1);
       playWinChime();
+      recordRound({ game: "Blackjack", bet: chip, mult: 2.5, payout: win });
       toast.success(`Blackjack! +${win.toLocaleString("de-DE")} €`);
     } else {
       setPhase("player");

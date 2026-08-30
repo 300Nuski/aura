@@ -185,6 +185,75 @@ async def set_balance(input: BalanceInput, user=Depends(get_current_user)):
     return {"balance": input.balance}
 
 
+async def require_admin(request: Request) -> dict:
+    user = await get_current_user(request)
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Nur für Admins.")
+    return user
+
+
+@api_router.get("/admin/users")
+async def admin_users(admin=Depends(require_admin)):
+    users = await db.users.find().sort("created_at", -1).to_list(500)
+    return [{**public_user(u), "created_at": u.get("created_at", "")} for u in users]
+
+
+class RoleInput(BaseModel):
+    role: str
+
+
+def parse_object_id(user_id: str) -> ObjectId:
+    try:
+        return ObjectId(user_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Ungültige Nutzer-ID.")
+
+
+@api_router.put("/admin/users/{user_id}/role")
+async def admin_set_role(user_id: str, input: RoleInput, admin=Depends(require_admin)):
+    if input.role not in ("user", "admin"):
+        raise HTTPException(status_code=400, detail="Ungültige Rolle.")
+    if str(admin["_id"]) == user_id and input.role != "admin":
+        raise HTTPException(status_code=400, detail="Du kannst dir nicht selbst die Admin-Rolle entziehen.")
+    res = await db.users.update_one({"_id": parse_object_id(user_id)}, {"$set": {"role": input.role}})
+    if res.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden.")
+    return {"ok": True, "role": input.role}
+
+
+@api_router.put("/admin/users/{user_id}/balance")
+async def admin_set_balance(user_id: str, input: BalanceInput, admin=Depends(require_admin)):
+    res = await db.users.update_one({"_id": parse_object_id(user_id)}, {"$set": {"balance": input.balance}})
+    if res.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Benutzer nicht gefunden.")
+    return {"ok": True, "balance": input.balance}
+
+
+class RoundInput(BaseModel):
+    game: str = Field(max_length=30)
+    bet: int = Field(ge=0, le=10_000_000)
+    mult: float = Field(ge=0, le=100_000)
+    payout: int = Field(ge=0, le=100_000_000)
+
+
+@api_router.post("/rounds")
+async def create_round(input: RoundInput, user=Depends(get_current_user)):
+    await db.rounds.insert_one({
+        "user_id": str(user["_id"]),
+        "game": input.game,
+        "bet": input.bet,
+        "mult": input.mult,
+        "payout": input.payout,
+        "ts": datetime.now(timezone.utc).isoformat(),
+    })
+    return {"ok": True}
+
+
+@api_router.get("/rounds/mine")
+async def my_rounds(limit: int = 5, user=Depends(get_current_user)):
+    return await db.rounds.find({"user_id": str(user["_id"])}, {"_id": 0}).sort("ts", -1).to_list(min(limit, 20))
+
+
 async def seed_user(email: str, password: str, name: str, role: str):
     existing = await db.users.find_one({"email": email})
     if existing is None:

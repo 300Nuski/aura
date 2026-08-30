@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Users, Wifi } from "lucide-react";
 import RocketShip from "@/components/RocketShip";
 import { playCashoutChime } from "@/lib/sounds";
+import { recordRound } from "@/lib/rounds";
 
 const BOT_NAMES = ["NoOneCanBeatMe", "Hello34445", "waffleman", "Defundings", "Nochance", "xXShadowXx", "KrakenKid", "LunaSky", "PixelPirat", "GoldenGir"];
 const AVATARS = ["from-[#8C3BFF] to-[#2E7CFF]", "from-[#00E575] to-[#00D2D3]", "from-[#FF9F1C] to-[#FF4757]", "from-[#2E7CFF] to-[#00D2D3]", "from-[#FF4757] to-[#8C3BFF]", "from-[#FFD32A] to-[#FF9F1C]"];
@@ -64,6 +65,7 @@ const CrashGame = ({ balance, setBalance }) => {
       setMyBet({ ...mb, active: false, cashedAt: m, win });
       setBalance((b) => b + win);
       playCashoutChime();
+      recordRound({ game: "Crash", bet: mb.amount, mult: m, payout: win });
       toast.success(`Ausgestiegen bei ${m.toFixed(2)}x · +${win.toLocaleString("de-DE")} €`);
     },
     [setBalance]
@@ -123,6 +125,7 @@ const CrashGame = ({ balance, setBalance }) => {
       if (mb && mb.active) {
         myBetRef.current = null;
         setMyBet({ ...mb, active: false, lost: true });
+        recordRound({ game: "Crash", bet: mb.amount, mult: 0, payout: 0 });
         toast.error(`Gecrashed bei ${crash.toFixed(2)}x — Einsatz verloren.`);
       }
       timeoutRef.current = setTimeout(() => {

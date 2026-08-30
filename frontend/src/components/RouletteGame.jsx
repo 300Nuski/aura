@@ -3,6 +3,7 @@ import { motion, animate } from "framer-motion";
 import { toast } from "sonner";
 import { RotateCw } from "lucide-react";
 import { playWinChime } from "@/lib/sounds";
+import { recordRound } from "@/lib/rounds";
 
 const WHEEL = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
 const REDS = new Set([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]);
@@ -89,6 +90,7 @@ const RouletteGame = ({ balance, setBalance }) => {
     const mult = BET_OPTIONS.find((o) => o.id === activeBet.type).mult;
     setResult({ num, won, amount: won ? chip * mult : 0 });
     setHistory((h) => [num, ...h].slice(0, 8));
+    recordRound({ game: "Roulette", bet: chip, mult: won ? mult : 0, payout: won ? chip * mult : 0 });
     if (won) {
       setBalance((b) => b + chip * mult);
       playWinChime();

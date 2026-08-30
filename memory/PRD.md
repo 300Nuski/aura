@@ -33,6 +33,11 @@
 - Lobby: Arena-Sektion entfernt, Bento-Karten navigieren zu den Spielseiten
 - Sounds: in allen Gewinn-Pfaden verdrahtet (AudioContext, try/catch, ohne User-Geste stumm)
 
+## Admin & Verlauf (Juli 2026)
+- Admin-Panel (/admin, nur role=admin): Nutzerliste mit Stats, Guthaben inline editierbar, Rollen-Toggle (Admin machen/entfernen, Selbst-Degradierung blockiert), 403 für Nicht-Admins
+- Runden-Historie: POST /api/rounds (Roulette/Blackjack/Crash loggen jede Runde), GET /api/rounds/mine — im Konto-Menü als „Letzte Runden" mit Spiel, Multi & Auszahlung
+- Admin-Links in Topbar & Sidebar nur für Admins sichtbar
+
 ## Backlog / nächste Schritte
 - P1: PvP-Duelle & Jackpot-Tickets als echte Minispiele
 - P1: Crash Auto-Modus (Auto-Bet Wiederholung)
