@@ -1,42 +1,35 @@
-# PRD — AURA ROYALE Casino Landingpage
+# PRD — AURA ROYALE Casino (Dark Dashboard)
 
 ## Original Problem Statement (deutsch)
 "Erstelle mir eine Casino Landingpage mit einzigartigem Design, schlichten hellen farben und viele Animationen!"
 
-## User Choices
-- Reine Landingpage + kleine spielbare Demo-Spiele (kein Echtgeld, kein Backend nötig)
-- Fokus: Klassiker — Roulette, Blackjack, Poker
-- Name: vom Agenten erfunden → **AURA ROYALE — Grand Casino & Privé Club**
-- Hero mit konkretem Bonusangebot (100% bis 1.500 € + 150 Freispiele) inkl. Bonus-Counter + Countdown
-
-## User Personas
-- Casino-Interessierte, die die Marke risikofrei kennenlernen wollen
-- Design-affinie Besucher, die eine hochwertige, helle Luxus-Ästhetik erwarten (Anti-Klischee: kein dunkles Neon)
+## Design-Historie
+- v1 (Juli 2026): Helle Ivory/Champagner-Luxus-Landingpage (verworfen auf User-Wunsch)
+- v2 (Juli 2026): User lieferte fiery.gg-Screenshot → komplettes Redesign als dunkles Gaming-Dashboard
+- v3 (Juli 2026): User-Wunsch: Roulette & Blackjack von Hauptseite entfernt → eigene Seiten via React Router; neues funktionierendes Crash-Spiel (Bloxflip-Screenshot als Referenz)
 
 ## Architektur
-- Frontend-only React App (kein Backend in Benutzung)
-- framer-motion (Scroll-Reveals, Hero-Reveal, Spiel-Animationen), lenis (Smooth Scrolling), sonner (Toasts), shadcn/ui (Dialog, Accordion), lucide-react (Icons)
-- Alle Inhalte auf Deutsch, Ivory/Champagner/Gold-Palette, Cormorant Garamond + Plus Jakarta Sans + JetBrains Mono
+- Frontend-only React App, React Router (/, /roulette, /blackjack, /crash)
+- Gemeinsames Guthaben (balance) in App.js → synchron über Topbar & alle Spiele
+- framer-motion, lenis (Smooth Scroll), sonner (Toasts), lucide-react, Tailwind
+- Layout: Topbar (Balance, Einzahlen-CTA, Nav) + linke Icon-Sidebar + rechter Live-Chat (xl) + Content
 
 ## Implementiert (Stand: Juli 2026)
-- Kinetischer Hero: Masked Line-by-Line Reveal, 3D-Maus-Parallax (rotierendes Deko-Rouletterad + schwebende Karten), animierter Bonus-Counter 0→1.500 €, 24h-Countdown, Live-Spieler-Ticker
-- Glass-Navbar mit Anchor-Navigation (lenis scrollTo), Mobile-Menü
-- Editoriale Slow-Marquee-Leiste (pausiert bei Hover)
-- Manifest-Kapitel 01/02/03 (Roulette, Blackjack, Poker) mit Bildern, RTP-Badges, alternierendem Layout
-- Spielbare Demo-Arena: SVG-Rouletterad (37 Segmente, Einsätze Rot/Schwarz/Gerade/Ungerade/Zahl, Chips 10–500, Verlauf, Guthaben) + Blackjack (Hit/Stand/Reset, Dealer-Logik ab 17, Asse korrekt, Blackjack 3:2, Gewinnserie)
-- VIP-Bento-Grid mit Champagner-Bildkachel + 4 Privilegien
-- FAQ-Accordion (4 Fragen)
-- Noir-Footer mit Newsletter-Formular (MOCKED, nur Toast), 18+-Hinweis, Riesen-Wasserzeichen
-- Bonus-Claim-Dialog mit generiertem Voucher-Code + Kopier-Button
+- **Lobby (/):** HeroBanner (100% Bonus bis 1.500 €, Countdown), Bento-Grid (PvP, Roulette, Jackpot, Blackjack, Crash), Top Matches (Esports mit Live-Badges & Odds), Top Slots (Carousel), Live-Bets-Ticker (Tabs: Live/Glückssträhnen/Whale), Footer mit 18+
+- **/roulette:** SVG-Europäisches Roulette (37 Segmente), Einsätze Rot/Schwarz/Gerade/Ungerade/Plein (×36), Chips 10–500, Verlauf, Regeln-Sidebar
+- **/blackjack:** Deal/Hit/Stand/Reset, Dealer ab 17, Asse 1/11, Blackjack 3:2, Gewinnserie, Regeln-Sidebar
+- **/crash:** Runden-Loop (5s Wartezeit → Multiplikator e^(0.00013·t) → Crash 0.99/(1-r)), SVG-Kurve mit Rakete (Rotation folgt Kurve), History-Pills, Bot-Spielerliste mit Cashouts, Auto-Cashout, Quick-Bets (1/2, 2×, Max)
+- **Bonus-Modal:** Code AURA-2026-ROYALE, Demo-Einzahlung +1.000 €
+- **Chat:** simulierte Community-Nachrichten + eigenes Senden
 
 ## Verifiziert
-- Roulette-Spin: Ergebnis korrekt ausgewertet, Guthaben aktualisiert (+100 € bei Rot)
-- Blackjack: Austeilen, Halten, Dealer-Auswertung korrekt
-- Bonus-Modal öffnet mit Code, Newsletter-Toast, Countdown läuft
+- Crash: Wette platziert (100 €), Ausstieg bei 1.31x → +131 €, Balance synchron in Topbar
+- Roulette-Seite: Spin gewonnen (19 Rot, +100 €), Balance 1.561 → 1.611
+- Blackjack-Seite: Austeilen, Scores, verdeckte Dealer-Karte OK; Zurück-Navigation OK
+- Lobby: Arena-Sektion entfernt, Bento-Karten navigieren zu den Spielseiten
 
 ## Backlog / nächste Schritte
-- P1: Poker-Demo-Spiel (3. Minispiel)
-- P1: Sound-Effekte (AudioContext-Chimes bei Gewinn)
-- P2: Echtes Newsletter-Backend (z. B. Resend)
-- P2: Mehrsprachigkeit (EN/DE Toggle)
-- P2: Turnier-Kalender-Sektion
+- P1: PvP-Duelle & Jackpot-Tickets als echte Minispiele
+- P1: Crash Auto-Modus (Auto-Bet Wiederholung)
+- P2: Gewinn-Sounds (AudioContext)
+- P2: Echtes Backend für Chat/Leaderboard

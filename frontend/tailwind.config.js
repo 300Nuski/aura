@@ -13,23 +13,25 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        serif: ['"Cormorant Garamond"', 'Bodoni Moda', 'serif'],
-        sans: ['"Plus Jakarta Sans"', 'Satoshi', 'Outfit', '-apple-system', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'SF Mono', 'monospace']
+        display: ['Outfit', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace']
       },
       colors: {
-        aura: {
-          ivory: '#FDFBF7',
-          alabaster: '#F6F2EA',
-          elevated: '#EFE9DD',
-          gold: '#C9A86A',
-          goldhover: '#B69352',
-          goldtint: '#F7F2E7',
-          crimson: '#A32A29',
-          noir: '#0F0E0C',
-          ink: '#171614',
-          secondary: '#5E5953',
-          muted: '#8C857B'
+        night: {
+          bg: '#0A0C10',
+          surface: '#0E1015',
+          card: '#151821',
+          cardhover: '#1C202C',
+          elevated: '#222634',
+          border: '#262C3D',
+          bordersub: '#1B202E',
+          sidebar: '#0B0D12',
+          chat: '#0E1117'
+        },
+        mint: {
+          DEFAULT: '#00E575',
+          hover: '#00FF83'
         },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

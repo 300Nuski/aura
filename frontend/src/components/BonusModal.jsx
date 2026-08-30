@@ -1,33 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Copy, Check, Diamond } from "lucide-react";
+import { Copy, Check, Gift } from "lucide-react";
 
-const genCode = () => {
-  const part = () => Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `AURA-${part()}-${part()}`;
-};
+const CODE = "AURA-2026-ROYALE";
+const METHODS = ["BTC", "ETH", "USDT", "VISA", "APPLE PAY", "SOFORT"];
 
 const STEPS = [
   "Konto in 60 Sekunden eröffnen — Verifizierung per E-Mail.",
   "Erste Einzahlung tätigen (min. 20 €) — Code wird automatisch angewendet.",
-  "100% Bonus bis 1.500 € + 150 Freispiele sofort im Privé Salon.",
+  "100% Bonus bis 1.500 € + 150 Freispiele sofort auf dem Konto.",
 ];
 
-const BonusModal = ({ open, onOpenChange }) => {
-  const [code, setCode] = useState("");
+const BonusModal = ({ open, onOpenChange, onDeposit }) => {
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (open) {
-      setCode(genCode());
-      setCopied(false);
-    }
-  }, [open]);
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(CODE);
       setCopied(true);
       toast.success("Bonus-Code kopiert.");
     } catch {
@@ -35,48 +25,69 @@ const BonusModal = ({ open, onOpenChange }) => {
     }
   };
 
+  const deposit = () => {
+    onDeposit(1000);
+    toast.success("Demo-Einzahlung erfolgreich: +1.000 € Bonus gutgeschrieben.");
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="bg-aura-ivory border border-[rgba(201,168,106,0.4)] sm:max-w-md rounded-2xl"
+        className="bg-night-card border border-night-border text-white sm:max-w-md rounded-2xl"
         data-testid="bonus-claim-dialog"
       >
         <DialogHeader>
-          <div className="w-11 h-11 rounded-full bg-aura-goldtint border border-[rgba(201,168,106,0.4)] flex items-center justify-center mb-3">
-            <Diamond className="w-5 h-5 text-aura-goldhover" fill="currentColor" />
+          <div className="w-11 h-11 rounded-xl bg-mint/15 border border-mint/30 flex items-center justify-center mb-3">
+            <Gift className="w-5 h-5 text-mint" />
           </div>
-          <DialogTitle className="font-serif text-2xl font-medium">Ihr Willkommensbonus</DialogTitle>
-          <DialogDescription className="text-sm text-aura-secondary">
+          <DialogTitle className="font-display text-2xl font-extrabold">Dein Willkommensbonus</DialogTitle>
+          <DialogDescription className="text-sm text-slate-400">
             100% bis 1.500 € + 150 Freispiele. So einfach geht's:
           </DialogDescription>
         </DialogHeader>
 
         <ol className="mt-2 space-y-3">
           {STEPS.map((s, i) => (
-            <li key={i} className="flex gap-3 text-sm text-aura-secondary leading-relaxed">
-              <span className="font-mono text-xs font-semibold text-aura-gold mt-0.5">0{i + 1}</span>
+            <li key={i} className="flex gap-3 text-sm text-slate-400 leading-relaxed">
+              <span className="font-mono text-xs font-bold text-mint mt-0.5">0{i + 1}</span>
               {s}
             </li>
           ))}
         </ol>
 
-        <div className="mt-5 rounded-xl border border-dashed border-aura-gold/60 bg-aura-goldtint px-5 py-4 flex items-center justify-between gap-3">
-          <span className="font-mono text-base sm:text-lg font-semibold tracking-[0.14em] text-aura-ink" data-testid="bonus-voucher-code">
-            {code}
+        <div className="mt-5 rounded-xl border border-dashed border-mint/50 bg-mint/10 px-5 py-4 flex items-center justify-between gap-3">
+          <span className="font-mono text-base sm:text-lg font-bold tracking-[0.12em] text-mint" data-testid="bonus-voucher-code">
+            {CODE}
           </span>
           <button
             onClick={copy}
-            className="rounded-full bg-aura-noir text-aura-ivory p-2.5 hover:bg-aura-goldhover transition-colors duration-300"
+            className="rounded-full bg-night-elevated border border-night-border text-white p-2.5 hover:border-mint/60 transition-colors duration-300"
             aria-label="Code kopieren"
             data-testid="bonus-copy-btn"
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? <Check className="w-4 h-4 text-mint" /> : <Copy className="w-4 h-4" />}
           </button>
         </div>
 
-        <p className="mt-4 text-[11px] text-aura-muted leading-relaxed">
-          Demo-Vorschau: Der Code ist ein Beispiel und dient der Veranschaulichung. 18+ · Es gelten die AGB ·
-          Durchspielbedingungen 25x.
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {METHODS.map((m) => (
+            <span key={m} className="rounded-md bg-night-elevated border border-night-border px-2.5 py-1 text-[10px] font-mono font-bold text-slate-300">
+              {m}
+            </span>
+          ))}
+        </div>
+
+        <button
+          onClick={deposit}
+          className="mt-5 w-full rounded-full bg-mint text-black font-extrabold text-sm py-3.5 hover:bg-mint-hover transition-colors duration-300 shadow-[0_0_22px_rgba(0,229,117,0.35)]"
+          data-testid="bonus-deposit-confirm-btn"
+        >
+          Jetzt einzahlen · +1.000 € (Demo)
+        </button>
+
+        <p className="mt-3 text-[11px] text-slate-600 leading-relaxed">
+          Demo-Simulation: Es fließt kein echtes Geld. 18+ · Es gelten die AGB · Umsatz 25x.
         </p>
       </DialogContent>
     </Dialog>

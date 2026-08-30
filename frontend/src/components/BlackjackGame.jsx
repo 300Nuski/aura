@@ -39,32 +39,31 @@ const Card = ({ card, hidden, index }) => (
     initial={{ y: -36, opacity: 0, rotate: -6 }}
     animate={{ y: 0, opacity: 1, rotate: 0 }}
     transition={{ duration: 0.45, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-    className={`w-12 h-[68px] sm:w-14 sm:h-20 rounded-lg border shadow-[0_10px_24px_-12px_rgba(23,22,20,0.35)] flex flex-col justify-between p-1.5 ${
-      hidden ? "bg-aura-noir border-aura-gold/60" : "bg-white border-[rgba(201,168,106,0.45)]"
+    className={`w-12 h-[68px] sm:w-14 sm:h-20 rounded-lg border shadow-[0_10px_24px_rgba(0,0,0,0.5)] flex flex-col justify-between p-1.5 ${
+      hidden ? "bg-night-sidebar border-mint/50" : "bg-white border-slate-200"
     }`}
   >
     {hidden ? (
-      <div className="w-full h-full rounded border border-aura-gold/40 flex items-center justify-center">
-        <span className="text-aura-gold text-lg">◆</span>
+      <div className="w-full h-full rounded border border-mint/30 flex items-center justify-center">
+        <span className="text-mint text-lg">◆</span>
       </div>
     ) : (
       <>
-        <span className={`font-serif text-sm sm:text-base leading-none ${card.red ? "text-aura-crimson" : "text-aura-ink"}`}>{card.rank}</span>
-        <span className={`self-center text-lg sm:text-xl ${card.red ? "text-aura-crimson" : "text-aura-ink"}`}>{card.s}</span>
-        <span className={`font-serif text-sm sm:text-base leading-none self-end rotate-180 ${card.red ? "text-aura-crimson" : "text-aura-ink"}`}>{card.rank}</span>
+        <span className={`font-display text-sm sm:text-base font-bold leading-none ${card.red ? "text-red-600" : "text-slate-900"}`}>{card.rank}</span>
+        <span className={`self-center text-lg sm:text-xl ${card.red ? "text-red-600" : "text-slate-900"}`}>{card.s}</span>
+        <span className={`font-display text-sm sm:text-base font-bold leading-none self-end rotate-180 ${card.red ? "text-red-600" : "text-slate-900"}`}>{card.rank}</span>
       </>
     )}
   </motion.div>
 );
 
-const BlackjackGame = () => {
-  const [balance, setBalance] = useState(1000);
+const BlackjackGame = ({ balance, setBalance }) => {
   const [chip, setChip] = useState(50);
   const [deck, setDeck] = useState([]);
   const [player, setPlayer] = useState([]);
   const [dealer, setDealer] = useState([]);
   const [phase, setPhase] = useState("bet");
-  const [message, setMessage] = useState("Platzieren Sie Ihren Einsatz und starten Sie die Runde.");
+  const [message, setMessage] = useState("Einsatz wählen und austeilen.");
   const [streak, setStreak] = useState(0);
   const [bet, setBet] = useState(0);
 
@@ -78,25 +77,25 @@ const BlackjackGame = () => {
     setDealer(d);
     setPhase("done");
     if (ps > 21) {
-      setMessage(`Überkauft mit ${ps}. Der Dealer gewinnt.`);
+      setMessage(`Überkauft mit ${ps}. Dealer gewinnt.`);
       setStreak(0);
       toast.error(`Bust! ${ps} Punkte.`);
     } else if (ds > 21) {
-      setMessage(`Dealer überkauft mit ${ds}. Sie gewinnen!`);
+      setMessage(`Dealer überkauft mit ${ds}. Du gewinnst!`);
       setBalance((b) => b + currentBet * 2);
       setStreak((s) => s + 1);
       toast.success(`Gewonnen! +${(currentBet * 2).toLocaleString("de-DE")} €`);
     } else if (ps > ds) {
-      setMessage(`${ps} gegen ${ds}. Sie gewinnen!`);
+      setMessage(`${ps} gegen ${ds}. Du gewinnst!`);
       setBalance((b) => b + currentBet * 2);
       setStreak((s) => s + 1);
       toast.success(`Gewonnen! +${(currentBet * 2).toLocaleString("de-DE")} €`);
     } else if (ps === ds) {
-      setMessage(`Unentschieden bei ${ps}. Einsatz zurück.`);
+      setMessage(`Push bei ${ps}. Einsatz zurück.`);
       setBalance((b) => b + currentBet);
       toast.info("Push — Einsatz zurückerstattet.");
     } else {
-      setMessage(`${ps} gegen ${ds}. Der Dealer gewinnt.`);
+      setMessage(`${ps} gegen ${ds}. Dealer gewinnt.`);
       setStreak(0);
       toast.error("Der Dealer gewinnt diese Runde.");
     }
@@ -112,19 +111,16 @@ const BlackjackGame = () => {
     setDealer(dl);
     setBet(chip);
     setBalance((b) => b - chip);
-    setPhase("player");
     if (score(p) === 21) {
-      const isBJ = true;
       setPhase("done");
-      setDealer(dl);
       const win = Math.floor(chip * 2.5);
-      setBalance((b) => b - 0 + win);
+      setBalance((b) => b + win);
       setMessage("Blackjack! Auszahlung 3:2.");
       setStreak((s) => s + 1);
       toast.success(`Blackjack! +${win.toLocaleString("de-DE")} €`);
-      void isBJ;
     } else {
-      setMessage("Ihr Zug: Karte nehmen oder halten?");
+      setPhase("player");
+      setMessage("Dein Zug: Karte oder halten?");
     }
   };
 
@@ -136,7 +132,7 @@ const BlackjackGame = () => {
       finish(p, dealer, d, bet);
     } else {
       setDeck(d);
-      setMessage(score(p) === 21 ? "21! Perfekt — halten Sie an." : "Karte nehmen oder halten?");
+      setMessage(score(p) === 21 ? "21! Perfekt — halten." : "Karte oder halten?");
     }
   };
 
@@ -151,31 +147,26 @@ const BlackjackGame = () => {
     setPhase("bet");
     setPlayer([]);
     setDealer([]);
-    setMessage("Platzieren Sie Ihren Einsatz und starten Sie die Runde.");
-  };
-
-  const refill = () => {
-    setBalance(1000);
-    toast.info("Demo-Guthaben auf 1.000 € aufgefüllt.");
+    setMessage("Einsatz wählen und austeilen.");
   };
 
   return (
-    <div className="rounded-2xl bg-white border border-[rgba(201,168,106,0.3)] shadow-[0_36px_80px_-40px_rgba(23,22,20,0.3)] p-6 sm:p-8" data-testid="blackjack-game">
-      <div className="flex items-start justify-between mb-6">
+    <div className="rounded-2xl bg-night-card border border-night-border p-5 sm:p-6" data-testid="blackjack-game">
+      <div className="flex items-start justify-between mb-5">
         <div>
-          <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-aura-gold font-medium mb-1">Spiel B</p>
-          <h3 className="font-serif text-xl sm:text-2xl font-medium">Blackjack Privé · 21</h3>
+          <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-mint font-bold mb-1">Kartenspiel</p>
+          <h3 className="font-display text-lg sm:text-xl font-extrabold">Blackjack 21 VIP</h3>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-aura-muted">Guthaben</p>
-          <p className="font-mono text-lg font-semibold tabular-nums" data-testid="blackjack-balance">{balance.toLocaleString("de-DE")} €</p>
+          <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-500">Guthaben</p>
+          <p className="font-mono text-base font-bold text-mint tabular-nums" data-testid="blackjack-balance">{balance.toLocaleString("de-DE")} €</p>
         </div>
       </div>
 
-      <div className="rounded-xl bg-aura-goldtint/70 border border-[rgba(201,168,106,0.3)] p-4 sm:p-5 mb-5 min-h-[220px]">
+      <div className="rounded-xl bg-[#0D2818] border border-mint/20 p-4 sm:p-5 mb-5 min-h-[220px] shadow-[inset_0_0_60px_rgba(0,0,0,0.45)]">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-aura-muted">Dealer</span>
-          <span className="font-mono text-sm font-semibold" data-testid="blackjack-dealer-score">
+          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400">Dealer</span>
+          <span className="font-mono text-sm font-bold text-mint" data-testid="blackjack-dealer-score">
             {dealer.length ? dealerVisibleScore : "—"}
           </span>
         </div>
@@ -187,11 +178,11 @@ const BlackjackGame = () => {
           </AnimatePresence>
         </div>
 
-        <div className="gold-hairline mb-5" />
+        <div className="h-px bg-mint/15 mb-5" />
 
         <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-aura-muted">Ihre Hand</span>
-          <span className="font-mono text-sm font-semibold" data-testid="blackjack-player-score">
+          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400">Deine Hand</span>
+          <span className="font-mono text-sm font-bold text-mint" data-testid="blackjack-player-score">
             {player.length ? playerScore : "—"}
           </span>
         </div>
@@ -204,7 +195,7 @@ const BlackjackGame = () => {
         </div>
       </div>
 
-      <p className="text-center text-xs sm:text-sm text-aura-secondary mb-4 min-h-[20px]" data-testid="blackjack-message">{message}</p>
+      <p className="text-center text-xs sm:text-sm text-slate-400 mb-4 min-h-[20px]" data-testid="blackjack-message">{message}</p>
 
       <div className="flex items-center justify-center gap-2 mb-4">
         {CHIPS.map((c) => (
@@ -212,10 +203,10 @@ const BlackjackGame = () => {
             key={c}
             onClick={() => setChip(c)}
             disabled={phase !== "bet"}
-            className={`w-11 h-11 rounded-full font-mono text-xs font-semibold border-2 transition-all duration-300 ${
+            className={`w-11 h-11 rounded-full font-mono text-xs font-bold border-2 transition-all duration-300 ${
               chip === c
-                ? "bg-aura-noir text-aura-gold border-aura-gold scale-110"
-                : "bg-aura-goldtint text-aura-ink border-[rgba(201,168,106,0.4)] hover:border-aura-gold"
+                ? "bg-mint text-black border-mint scale-110 shadow-[0_0_18px_rgba(0,229,117,0.5)]"
+                : "bg-night-elevated text-slate-300 border-night-border hover:border-mint/50"
             } disabled:opacity-40`}
             data-testid={`blackjack-chip-selector-${c}`}
           >
@@ -229,7 +220,7 @@ const BlackjackGame = () => {
           <button
             onClick={deal}
             disabled={balance < chip}
-            className="col-span-2 rounded-full bg-aura-noir text-aura-ivory py-3 text-sm font-semibold inline-flex items-center justify-center gap-2 hover:bg-aura-goldhover transition-colors duration-300 disabled:opacity-40"
+            className="col-span-2 rounded-full bg-mint text-black py-3 text-sm font-extrabold inline-flex items-center justify-center gap-2 hover:bg-mint-hover transition-colors duration-300 disabled:opacity-40 shadow-[0_0_22px_rgba(0,229,117,0.35)]"
             data-testid="blackjack-deal-btn"
           >
             <Coins className="w-4 h-4" />
@@ -239,14 +230,14 @@ const BlackjackGame = () => {
           <>
             <button
               onClick={hit}
-              className="rounded-full bg-aura-noir text-aura-ivory py-3 text-sm font-semibold inline-flex items-center justify-center gap-1.5 hover:bg-aura-goldhover transition-colors duration-300"
+              className="rounded-full bg-white text-black py-3 text-sm font-extrabold inline-flex items-center justify-center gap-1.5 hover:bg-slate-200 transition-colors duration-300"
               data-testid="blackjack-hit-btn"
             >
-              <Plus className="w-4 h-4" /> Karte
+              <Plus className="w-4 h-4" strokeWidth={3} /> Karte
             </button>
             <button
               onClick={stand}
-              className="rounded-full border-2 border-aura-ink py-3 text-sm font-semibold inline-flex items-center justify-center gap-1.5 hover:border-aura-gold hover:text-aura-goldhover transition-colors duration-300"
+              className="rounded-full border-2 border-slate-400/60 py-3 text-sm font-extrabold inline-flex items-center justify-center gap-1.5 hover:border-mint hover:text-mint transition-colors duration-300"
               data-testid="blackjack-stand-btn"
             >
               <Hand className="w-4 h-4" /> Halten
@@ -255,22 +246,18 @@ const BlackjackGame = () => {
         )}
         <button
           onClick={reset}
-          className="rounded-full bg-aura-alabaster py-3 text-sm font-semibold inline-flex items-center justify-center gap-1.5 hover:bg-aura-elevated transition-colors duration-300"
+          className="rounded-full bg-night-elevated py-3 text-sm font-bold inline-flex items-center justify-center gap-1.5 text-slate-300 hover:bg-night-cardhover transition-colors duration-300"
           data-testid="blackjack-reset-btn"
         >
           <RefreshCcw className="w-4 h-4" /> Reset
         </button>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-xs text-aura-secondary">
+      <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
         <span data-testid="blackjack-streak">
-          Gewinnserie: <span className="font-mono font-semibold text-aura-ink">{streak}</span>
+          Gewinnserie: <span className="font-mono font-bold text-mint">{streak}</span>
         </span>
-        {balance < CHIPS[0] && (
-          <button onClick={refill} className="font-semibold text-aura-goldhover underline underline-offset-2" data-testid="blackjack-refill-btn">
-            Guthaben auffüllen
-          </button>
-        )}
+        <span className="font-mono text-[10px] uppercase tracking-wider">Dealer steht ab 17</span>
       </div>
     </div>
   );
