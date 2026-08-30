@@ -1,0 +1,322 @@
+{
+  "brand": {
+    "name": "AURA ROYALE",
+    "tagline": "Die Kunst des Spiels. Im reinsten Licht.",
+    "sub_tagline": "Grand Casino & Privé Club",
+    "tone_of_voice": "Sophisticated, serene, high-luxury, editorial, evocative, uncompromising German prose",
+    "language": "de-DE",
+    "aesthetic_fusion": [
+      "Swiss Haute Horlogerie & Editorial Typography (Cormorant Garamond + Satoshi/Outfit)",
+      "Monaco Belle Époque Riviera Light (Champagne, warm alabaster, subtle gilded accents)",
+      "High-Precision Interactive Motion (Kinetic reveals, interactive SVG roulette, physics card draw, real-time counter ticker)"
+    ]
+  },
+  "color_palette": {
+    "theme": "light",
+    "philosophy": "Anti-AI Casino trope: ZERO tacky dark neon/purple gradients. Instead, pure ivory silk, warm alabaster stone, subtle brushed gold highlights, and deep obsidian typography for crystalline APCA readability.",
+    "tokens": {
+      "bg_base": "#FDFBF7",
+      "bg_surface_card": "#FFFFFF",
+      "bg_subtle": "#F6F2EA",
+      "bg_elevated": "#EFE9DD",
+      "text_primary": "#171614",
+      "text_secondary": "#5E5953",
+      "text_muted": "#8C857B",
+      "gold_accent": "#C9A86A",
+      "gold_accent_hover": "#B69352",
+      "gold_light_tint": "#F7F2E7",
+      "crimson_accent": "#A32A29",
+      "noir_deep": "#0F0E0C",
+      "border_delicate": "rgba(23, 22, 20, 0.08)",
+      "border_gold_subtle": "rgba(201, 168, 106, 0.35)",
+      "glass_bg": "rgba(253, 251, 247, 0.82)",
+      "glass_border": "rgba(201, 168, 106, 0.22)"
+    },
+    "css_variables_setup": {
+      "--background": "40 33% 98%",
+      "--foreground": "30 6% 9%",
+      "--card": "0 0% 100%",
+      "--card-foreground": "30 6% 9%",
+      "--primary": "39 46% 60%",
+      "--primary-foreground": "0 0% 100%",
+      "--secondary": "38 27% 93%",
+      "--secondary-foreground": "30 6% 15%",
+      "--muted": "38 20% 92%",
+      "--muted-foreground": "30 7% 45%",
+      "--accent": "39 52% 94%",
+      "--accent-foreground": "39 46% 35%",
+      "--border": "38 18% 88%",
+      "--input": "38 18% 88%",
+      "--ring": "39 46% 60%"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "display_heading": "Cormorant Garamond, Bodoni Moda, serif",
+      "sans_body": "Plus Jakarta Sans, Satoshi, Outfit, -apple-system, sans-serif",
+      "mono_data": "JetBrains Mono, SF Mono, monospace"
+    },
+    "google_font_url": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
+    "scale": {
+      "hero_title": "text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.05]",
+      "section_title": "text-2xl sm:text-3xl lg:text-4xl font-normal tracking-tight leading-snug",
+      "card_title": "text-xl sm:text-2xl font-serif font-medium leading-snug",
+      "body_lead": "text-lg sm:text-xl font-light text-text-secondary leading-relaxed",
+      "body_base": "text-sm sm:text-base font-normal text-text-secondary leading-relaxed",
+      "overline_tag": "text-xs font-mono uppercase tracking-[0.22em] text-gold-accent font-medium",
+      "counter_display": "font-mono text-3xl sm:text-4xl font-semibold tracking-tight"
+    }
+  },
+  "layout_and_spacing": {
+    "container_max_width": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "section_vertical_padding": "py-20 sm:py-28 lg:py-32",
+    "grid_modes": {
+      "tetris_manifesto": "grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-stretch",
+      "game_playground": "grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10",
+      "vip_bento": "grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8",
+      "rules_faq": "grid grid-cols-1 lg:grid-cols-12 gap-12"
+    }
+  },
+  "motion_and_animations": {
+    "framer_motion_recipes": {
+      "hero_line_reveal": {
+        "initial": { "y": "100%", "opacity": 0 },
+        "animate": { "y": 0, "opacity": 1 },
+        "transition": { "duration": 0.85, "ease": [0.16, 1, 0.3, 1] }
+      },
+      "stagger_container": {
+        "hidden": { "opacity": 0 },
+        "show": {
+          "opacity": 1,
+          "transition": { "staggerChildren": 0.12, "delayChildren": 0.1 }
+        }
+      },
+      "fade_up_soft": {
+        "hidden": { "opacity": 0, "y": 24 },
+        "show": { "opacity": 1, "y": 0, "transition": { "duration": 0.65, "ease": [0.22, 1, 0.36, 1] } }
+      },
+      "card_hover_spring": {
+        "whileHover": { "y": -4, "transition": { "type": "spring", "stiffness": 300, "damping": 20 } }
+      }
+    },
+    "interactive_components": [
+      "Live 24h bonus countdown timer with milliseconds ticker",
+      "Simulated live VIP table active counter (e.g. '3.482 aktive Spieler online')",
+      "Playable Grand Roulette Wheel with authentic audio clicks / visual ball stop & winning multiplier",
+      "Playable Blackjack Privé Table (Draw, Stand, Double, Card dealer AI, chip bets, streak stats)",
+      "Smooth editorial marquee banner flowing horizontally",
+      "Interactive chip stack selector ($10, $50, $100, $500) for demo betting",
+      "Interactive claim bonus modal with realistic step-by-step preview and instant voucher code generator"
+    ]
+  },
+  "sections_blueprint": [
+    {
+      "id": "navbar",
+      "name": "Navigation Bar",
+      "component_role": "Sticky Crystal Glass Navigation",
+      "features": [
+        "AURA ROYALE monogram + brand logo",
+        "Links: 01 Die Spiele, 02 Roulette Demo, 03 Blackjack Privé, 04 VIP Club, 05 FAQ",
+        "Live status badge: 'LIZENZIERT & GEPRÜFT · 24/7 LIVE'",
+        "CTA Button: 'Bonus Freischalten (100% bis 1.500€)' with hover glow",
+        "Mobile responsive drawer menu with smooth framer-motion transition"
+      ]
+    },
+    {
+      "id": "hero",
+      "name": "Kinetic Hero with Bonus Countdown",
+      "component_role": "High-Impact Editorial Header",
+      "content": {
+        "badge": "EXKLUSIVER WILLKOMMENSBONUS · SAISON 2026",
+        "headline": "Das Privileg der vollkommenen Eleganz.",
+        "subline": "Erleben Sie Roulette, Blackjack und Poker in einer Dimension schlichter Ästhetik. Verdoppeln Sie Ihr Eröffnungsspiel mit 100% bis zu 1.500 € plus 150 Freispiele im Privé Salon.",
+        "bonus_counter_val": "1.500 €",
+        "bonus_multiplier": "100% MATCH + 150 FREISPIELE",
+        "countdown_label": "ANGEBOT GÜLTIG FÜR DIE NÄCHSTEN:",
+        "cta_primary": "Jetzt Bonus Sichern",
+        "cta_secondary": "Kostenlos Ausprobieren",
+        "trust_pills": ["MGA Zertifiziert", "Blitz-Auszahlung < 15 Min", "98.7% RTP Quote"]
+      }
+    },
+    {
+      "id": "editorial_marquee",
+      "name": "Editorial Marquee Ribbon",
+      "component_role": "Slow Organic Kinetic Ribbon",
+      "phrases": [
+        "EUROPEAN ROULETTE",
+        "BLACKJACK ROYALE",
+        "TEXAS HOLD'EM PRIVÉ",
+        "100% WILLKOMMENSBONUS",
+        "HIGH ROLLER SUITE",
+        "INSTANT WITHDRAWAL",
+        "PROVABLY FAIR"
+      ]
+    },
+    {
+      "id": "game_manifesto",
+      "name": "Numbered Manifesto Chapters (01, 02, 03)",
+      "component_role": "Editorial 3-Column Asymmetric Deep Dive",
+      "chapters": [
+        {
+          "number": "01",
+          "title": "Roulette Impérial",
+          "tag": "DER KLASSIKER AM RAD",
+          "description": "Das pure französische Kesselspiel mit Zero-La-Partage-Regel. Eleganter Balllauf, 37 handgefertigte Segmente und Live-Kamerawechsel in 4K.",
+          "stat": "98.65% RTP",
+          "action_text": "Am Kessel Platz nehmen"
+        },
+        {
+          "number": "02",
+          "title": "Blackjack Privé",
+          "tag": "DIE PRÄZISION VON 21",
+          "description": "Spielen Sie Single-Deck oder 6-Deck nach klassischen Casino-Regeln. Split, Double Down und Perfect Pairs mit direkter Auszahlung.",
+          "stat": "99.42% RTP",
+          "action_text": "Karten austeilen"
+        },
+        {
+          "number": "03",
+          "title": "Poker Salon No-Limit",
+          "tag": "MEISTERSCHAFT DER PSYCHOLOGIE",
+          "description": "Texas Hold'em und Omaha an exklusiven Tischen. Keine Bots, verifizierte High-Roller-Räume und wöchentliche Master-Turniere.",
+          "stat": "10.000€ Daily Pots",
+          "action_text": "Salon beitreten"
+        }
+      ]
+    },
+    {
+      "id": "interactive_playground",
+      "name": "Interactive Demo Mini-Games Arena",
+      "component_role": "2 Fully Playable Canvas/SVG Mini-Games for Fun",
+      "subsections": [
+        {
+          "name": "Game A: Aura Roulette Spin Arena",
+          "features": [
+            "Functional interactive wheel with SVG segments & spinning ball animation",
+            "Chip denomination selector (10€, 50€, 100€, 500€)",
+            "Betting on Red/Black, Even/Odd, or Straight Numbers",
+            "Real-time wallet balance, spin history list, winning celebration toast"
+          ]
+        },
+        {
+          "name": "Game B: 21 Blackjack Salon Table",
+          "features": [
+            "Real card deal logic (Dealer stands on 17, Player can Hit, Stand, Reset)",
+            "Score computation (Aces 1 or 11 handled correctly)",
+            "Card flip flip animations, chip bet placement, win/bust modal alerts",
+            "Leaderboard simulation and win streak counter"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vip_privileges",
+      "name": "VIP & Club Privileges (Bento Grid)",
+      "component_role": "Luxury Feature Grid with Light Glassmorphism",
+      "perks": [
+        {
+          "title": "Persönlicher Concierge",
+          "desc": "Ihr persönlicher VIP-Manager erreichbar rund um die Uhr per Direktkontakt.",
+          "icon": "Crown"
+        },
+        {
+          "title": "Prioritäre Express-Auszahlung",
+          "desc": "Auszahlungen ohne Verzögerung – direkt auf Ihr Bankkonto oder Krypto-Wallet.",
+          "icon": "Zap"
+        },
+        {
+          "title": "Monaco & Vegas Einladungen",
+          "desc": "Exklusive Event-Tickets zu renommierten Turnieren und Gala-Abenden weltweit.",
+          "icon": "Sparkles"
+        },
+        {
+          "title": "Individuelle Tischlimits",
+          "desc": "Spielen Sie ohne starre Obergrenzen in unseren privaten Salon-Suiten.",
+          "icon": "ShieldCheck"
+        }
+      ]
+    },
+    {
+      "id": "faq_rules",
+      "name": "Häufige Fragen & Casino Leitfaden",
+      "component_role": "Accordion with crystal light borders",
+      "faqs": [
+        {
+          "q": "Wie funktioniert der 100% Willkommensbonus?",
+          "a": "Ihre erste Einzahlung bis zu 1.500 € wird sofort verdoppelt. Zusätzlich erhalten Sie 150 Freispiele für unsere Roulette- und Slot-Klassiker. Die Durchspielbedingungen betragen faire 25x."
+        },
+        {
+          "q": "Sind die Demo-Spiele auf dieser Landingpage kostenlos?",
+          "a": "Ja, absolut. Unsere integrierte Roulette- und Blackjack-Arena ist zu 100% kostenlos und dient dem risikofreien Kennenlernen unserer Spielmechaniken mit Spielguthaben."
+        },
+        {
+          "q": "Welche Zahlungsmethoden werden unterstützt?",
+          "a": "Wir unterstützen Sofortüberweisung, Kreditkarten (Visa/Mastercard), Apple Pay, SEPA Instant sowie ausgewählte Krypto-Assets (BTC, ETH, USDT)."
+        },
+        {
+          "q": "Wie garantiert Aura Royale faires Spiel (RTP)?",
+          "a": "Alle unsere Spiele werden von unabhängigen Prüfinstituten (eCOGRA / iTech Labs) zertifiziert. Unsere Zufallsgeneratoren (RNG) arbeiten kryptografisch verifizierbar."
+        }
+      ]
+    },
+    {
+      "id": "footer",
+      "name": "Editorial Noir/Ivory Grand Footer",
+      "component_role": "High-Contrast Grounding Footer",
+      "elements": [
+        "Massive brand typographic watermark: 'AURA ROYALE'",
+        "Responsible Gaming 18+ warning label with BZgA support link",
+        "Legal disclaimers in German regarding license, terms, and data privacy",
+        "Newsletter VIP Invitation with instant email sign-up"
+      ]
+    }
+  ],
+  "curated_media_assets": {
+    "roulette_hands": "https://images.unsplash.com/photo-1773335638484-297f95ef33a9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBjYXNpbm8lMjByb3VsZXR0ZXxlbnwwfHx8fDE3ODgwODQ1NDJ8MA&ixlib=rb-4.1.0&q=85",
+    "roulette_gold_kessel": "https://images.unsplash.com/photo-1657782887653-a2b2bb036c42?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzd8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjBjYXNpbm8lMjByb3VsZXR0ZXxlbnwwfHx8fDE3ODgwODQ1NDJ8MA&ixlib=rb-4.1.0&q=85",
+    "poker_cards_aces": "https://images.unsplash.com/photo-1636583133884-fbefc7ac3fb3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHxwbGF5aW5nJTIwY2FyZHMlMjBwb2tlcnxlbnwwfHx8fDE3ODgwODQ1NDJ8MA&ixlib=rb-4.1.0&q=85",
+    "poker_table_felt": "https://images.unsplash.com/photo-1596451190630-186aff535bf2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHw0fHxwbGF5aW5nJTIwY2FyZHMlMjBwb2tlcnxlbnwwfHx8fDE3ODgwODQ1NDJ8MA&ixlib=rb-4.1.0&q=85",
+    "champagne_luxe": "https://images.unsplash.com/photo-1580657274234-7339717f4541?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwxfHxjaGFtcGFnbmUlMjBnbGFzcyUyMGx1eHVyeXxlbnwwfHx8fDE3ODgwODQ1NTB8MA&ixlib=rb-4.1.0&q=85"
+  },
+  "testing_attributes": {
+    "convention": "data-testid on every interactive button, input, tab, counter, and game element",
+    "mandatory_ids": [
+      "navbar-brand",
+      "navbar-bonus-cta",
+      "hero-claim-bonus-btn",
+      "hero-play-demo-btn",
+      "hero-bonus-countdown-timer",
+      "hero-bonus-value-display",
+      "marquee-ribbon",
+      "manifesto-chapter-01",
+      "manifesto-chapter-02",
+      "manifesto-chapter-03",
+      "roulette-spin-button",
+      "roulette-wheel-svg",
+      "roulette-bet-red-btn",
+      "roulette-bet-black-btn",
+      "roulette-chip-selector-10",
+      "roulette-chip-selector-50",
+      "roulette-chip-selector-100",
+      "roulette-result-badge",
+      "blackjack-deal-btn",
+      "blackjack-hit-btn",
+      "blackjack-stand-btn",
+      "blackjack-reset-btn",
+      "blackjack-player-score",
+      "blackjack-dealer-score",
+      "bonus-claim-modal-trigger",
+      "bonus-claim-dialog",
+      "faq-accordion-item-0",
+      "newsletter-email-input",
+      "newsletter-submit-btn"
+    ]
+  },
+  "universal_guidelines_for_main_agent": [
+    "Never create dark neon generic casino UI. Maintain the pristine ivory/alabaster/champagne light luxury aesthetic throughout.",
+    "Do not use transparent dropdowns or invisible hover states. Use backdrop-blur with 80%+ opacity and 1px subtle gold borders.",
+    "Framer-motion must be used generously for staggered scroll triggers, live numbers, and interactive card/wheel states.",
+    "Include both full playable mini games (Roulette and Blackjack) with sound effects (synthesized AudioContext or visual chime alerts), real state handling, score calculation, and fun reset mechanics.",
+    "Make sure all content is in eloquent German as requested in the problem statement.",
+    "All interactive elements must carry proper data-testid attributes."
+  ]
+}
