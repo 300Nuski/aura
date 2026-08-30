@@ -12,7 +12,7 @@ const NAVS = [
   { id: "crash", label: "Crash", route: "/crash" },
 ];
 
-const GAME_COLORS = { Roulette: "#E84118", Blackjack: "#00E575", Crash: "#FF9F1C" };
+const GAME_COLORS = { Roulette: "#E84118", Blackjack: "#00E575", Crash: "#FF9F1C", "Sweet Bonanza": "#EC4899" };
 
 const AnimatedBalance = ({ value }) => {
   const [display, setDisplay] = useState(value);

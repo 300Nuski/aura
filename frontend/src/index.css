@@ -156,6 +156,14 @@
     animation: twinkle 2.6s ease-in-out infinite;
 }
 
+@keyframes candy-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+}
+.animate-bob {
+    animation: candy-bob 3.4s ease-in-out infinite;
+}
+
 .winning-cell svg {
     animation: winner-pulse 0.45s ease-in-out infinite;
     filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));

@@ -45,18 +45,18 @@ const SweetBonanzaPage = ({ balance, setBalance }) => {
           <div className="h-px bg-night-bordersub mb-4" />
           <div className="flex items-center gap-3 mb-3">
             <span className="w-9 h-9 shrink-0">
-              <CandySymbol type="lollipop" />
+              <CandySymbol type="jar" />
             </span>
             <p className="text-xs text-slate-400 leading-relaxed">
-              <span className="text-white font-semibold">Lolli (Scatter):</span> 4+ lösen 10 Freispiele aus, weitere 4+ geben +5.
+              <span className="text-white font-semibold">Freispiel-Glas (Scatter):</span> 4+ lösen 10 Freispiele aus, weitere 4+ geben +5.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <span className="w-9 h-9 shrink-0">
-              <CandySymbol type="bomb" />
+              <CandySymbol type="multijar" />
             </span>
             <p className="text-xs text-slate-400 leading-relaxed">
-              <span className="text-white font-semibold">Regenbogen-Bombe:</span> erscheint in Freispielen und multipliziert den Rundengewinn mit ×2 bis ×100.
+              <span className="text-white font-semibold">Multi-Glas:</span> erscheint in Freispielen und multipliziert den Rundengewinn mit ×2 bis ×100.
             </p>
           </div>
         </aside>
