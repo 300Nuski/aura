@@ -136,3 +136,13 @@
     scrollbar-width: thin;
     scrollbar-color: #262c3d transparent;
 }
+
+@keyframes flame-flicker {
+    0%, 100% { transform: scaleX(1) scaleY(1); opacity: 0.9; }
+    50% { transform: scaleX(1.32) scaleY(0.85); opacity: 1; }
+}
+.flame-flicker {
+    transform-box: fill-box;
+    transform-origin: right center;
+    animation: flame-flicker 0.16s ease-in-out infinite;
+}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Plus, Hand, RefreshCcw, Coins } from "lucide-react";
+import { playWinChime } from "@/lib/sounds";
 
 const SUITS = [
   { s: "♠", red: false },
@@ -84,11 +85,13 @@ const BlackjackGame = ({ balance, setBalance }) => {
       setMessage(`Dealer überkauft mit ${ds}. Du gewinnst!`);
       setBalance((b) => b + currentBet * 2);
       setStreak((s) => s + 1);
+      playWinChime();
       toast.success(`Gewonnen! +${(currentBet * 2).toLocaleString("de-DE")} €`);
     } else if (ps > ds) {
       setMessage(`${ps} gegen ${ds}. Du gewinnst!`);
       setBalance((b) => b + currentBet * 2);
       setStreak((s) => s + 1);
+      playWinChime();
       toast.success(`Gewonnen! +${(currentBet * 2).toLocaleString("de-DE")} €`);
     } else if (ps === ds) {
       setMessage(`Push bei ${ps}. Einsatz zurück.`);
@@ -117,6 +120,7 @@ const BlackjackGame = ({ balance, setBalance }) => {
       setBalance((b) => b + win);
       setMessage("Blackjack! Auszahlung 3:2.");
       setStreak((s) => s + 1);
+      playWinChime();
       toast.success(`Blackjack! +${win.toLocaleString("de-DE")} €`);
     } else {
       setPhase("player");

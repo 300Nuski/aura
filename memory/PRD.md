@@ -22,11 +22,16 @@
 - **Bonus-Modal:** Code AURA-2026-ROYALE, Demo-Einzahlung +1.000 €
 - **Chat:** simulierte Community-Nachrichten + eigenes Senden
 
+- **Crash-Upgrade (Juli 2026):** futuristische Detail-Rakete (eigenes SVG: Metallrumpf, Canopy, Flossen, Neon-Streifen, flackernde Triebwerksflamme) + Rauchwolken-Trail statt grüner Linie (geblurte SVG-Kreise, rot beim Crash)
+- **Gewinn-Sounds (Juli 2026):** Web-Audio-Chimes in src/lib/sounds.js — playWinChime (Roulette-Treffer, Blackjack-Sieg/Blackjack 3:2), playCashoutChime (Crash-Cashout, Sweep + Ding)
+
 ## Verifiziert
 - Crash: Wette platziert (100 €), Ausstieg bei 1.31x → +131 €, Balance synchron in Topbar
+- Crash v2: Rakete + Rauch-Trail rendern, Crash bei 1.23x korrekt abgewickelt (Einsatz verloren, Verlauf aktualisiert)
 - Roulette-Seite: Spin gewonnen (19 Rot, +100 €), Balance 1.561 → 1.611
 - Blackjack-Seite: Austeilen, Scores, verdeckte Dealer-Karte OK; Zurück-Navigation OK
 - Lobby: Arena-Sektion entfernt, Bento-Karten navigieren zu den Spielseiten
+- Sounds: in allen Gewinn-Pfaden verdrahtet (AudioContext, try/catch, ohne User-Geste stumm)
 
 ## Backlog / nächste Schritte
 - P1: PvP-Duelle & Jackpot-Tickets als echte Minispiele

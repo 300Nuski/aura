@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Rocket, Users, Wifi } from "lucide-react";
+import { Users, Wifi } from "lucide-react";
+import RocketShip from "@/components/RocketShip";
+import { playCashoutChime } from "@/lib/sounds";
 
 const BOT_NAMES = ["NoOneCanBeatMe", "Hello34445", "waffleman", "Defundings", "Nochance", "xXShadowXx", "KrakenKid", "LunaSky", "PixelPirat", "GoldenGir"];
 const AVATARS = ["from-[#8C3BFF] to-[#2E7CFF]", "from-[#00E575] to-[#00D2D3]", "from-[#FF9F1C] to-[#FF4757]", "from-[#2E7CFF] to-[#00D2D3]", "from-[#FF4757] to-[#8C3BFF]", "from-[#FFD32A] to-[#FF9F1C]"];
@@ -61,6 +63,7 @@ const CrashGame = ({ balance, setBalance }) => {
       myBetRef.current = null;
       setMyBet({ ...mb, active: false, cashedAt: m, win });
       setBalance((b) => b + win);
+      playCashoutChime();
       toast.success(`Ausgestiegen bei ${m.toFixed(2)}x · +${win.toLocaleString("de-DE")} €`);
     },
     [setBalance]
@@ -98,7 +101,7 @@ const CrashGame = ({ balance, setBalance }) => {
         const elapsed = performance.now() - start;
         const m = Math.max(1, Math.floor(Math.exp(GROWTH * elapsed) * 100) / 100);
         setMult(m);
-        setPoints((p) => [...p.slice(-500), { t: elapsed, m }]);
+        setPoints((p) => [...p.slice(-360), { t: elapsed, m }]);
         setPlayers((ps) => ps.map((pl) => (!pl.cashed && !pl.lost && pl.target <= m ? { ...pl, cashed: true } : pl)));
         const mb = myBetRef.current;
         if (mb && mb.active && mb.auto && m >= mb.auto) cashOut(m);
@@ -155,14 +158,18 @@ const CrashGame = ({ balance, setBalance }) => {
   const maxM = Math.max(3, mult * 1.18);
   const gx = (t) => PADL + (t / maxT) * (W - PADL - PADR);
   const gy = (m) => H - PADB - (Math.log(Math.max(1, m)) / Math.log(maxM)) * (H - PADB - PADT);
-  const linePts = points.map((p) => `${gx(p.t).toFixed(1)},${gy(p.m).toFixed(1)}`).join(" ");
-  const areaPts = points.length ? `${gx(0)},${H - PADB} ${linePts} ${gx(last.t)},${H - PADB}` : "";
+
+  const sampled = points.filter((_, i) => i % 4 === 0);
+  const smokePuffs = sampled.map((p, j) => {
+    const age = sampled.length > 1 ? 1 - j / (sampled.length - 1) : 0;
+    return { ...p, r: 3.5 + age * 11, o: 0.3 * (1 - age * 0.78) };
+  });
 
   let rocketRot = 0;
   if (points.length > 1) {
     const a = points[points.length - 2];
     const b = last;
-    rocketRot = (Math.atan2(gy(b.m) - gy(a.m), gx(b.t) - gx(a.t)) * 180) / Math.PI + 45;
+    rocketRot = (Math.atan2(gy(b.m) - gy(a.m), gx(b.t) - gx(a.t)) * 180) / Math.PI;
   }
 
   const yTicks = [0, 1, 2, 3, 4].map((i) => Math.exp((Math.log(maxM) * i) / 4));
@@ -354,10 +361,9 @@ const CrashGame = ({ balance, setBalance }) => {
 
             <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" data-testid="crash-graph">
               <defs>
-                <linearGradient id="crashFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#00E575" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#00E575" stopOpacity="0" />
-                </linearGradient>
+                <filter id="smoke-blur" x="-40%" y="-40%" width="180%" height="180%">
+                  <feGaussianBlur stdDeviation="4.5" />
+                </filter>
               </defs>
               {yTicks.map((m, i) => (
                 <g key={i}>
@@ -372,31 +378,32 @@ const CrashGame = ({ balance, setBalance }) => {
                   {s}s
                 </text>
               ))}
-              {points.length > 1 && (
-                <>
-                  <polygon points={areaPts} fill="url(#crashFill)" />
-                  <polyline
-                    points={linePts}
-                    fill="none"
-                    stroke={phase === "crashed" ? "#FF4757" : "#00E575"}
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </>
+              {smokePuffs.length > 1 && (
+                <g filter="url(#smoke-blur)">
+                  {smokePuffs.map((p, j) => (
+                    <circle
+                      key={j}
+                      cx={gx(p.t)}
+                      cy={gy(p.m)}
+                      r={p.r}
+                      fill={phase === "crashed" ? "#FCA5A5" : "#CBD5E1"}
+                      opacity={p.o}
+                    />
+                  ))}
+                </g>
               )}
             </svg>
 
             {points.length > 1 && phase !== "waiting" && (
               <div
-                className="absolute w-10 h-10 -ml-5 -mt-5 flex items-center justify-center pointer-events-none"
+                className="absolute w-[92px] h-[64px] -ml-[46px] -mt-[32px] pointer-events-none"
                 style={{ left: `${(gx(last.t) / W) * 100}%`, top: `${(gy(last.m) / H) * 100}%` }}
                 data-testid="crash-rocket"
               >
-                <Rocket
-                  className={`w-8 h-8 ${phase === "crashed" ? "text-[#FF4757]" : "text-[#FF9F1C]"} drop-shadow-[0_0_14px_rgba(255,159,28,0.8)]`}
+                <RocketShip
+                  thrusting={phase === "running"}
+                  className={`w-full h-full drop-shadow-[0_0_16px_rgba(34,211,238,0.55)] ${phase === "crashed" ? "opacity-60" : ""}`}
                   style={{ transform: `rotate(${rocketRot}deg)` }}
-                  fill="currentColor"
                 />
               </div>
             )}
