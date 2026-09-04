@@ -48,11 +48,20 @@ const CrashGame = ({ balance, setBalance }) => {
   const [myBet, setMyBet] = useState(null);
   const [betAmount, setBetAmount] = useState(100);
   const [autoCash, setAutoCash] = useState(2);
+  const [mode, setMode] = useState("manual");
+  const [autoRounds, setAutoRounds] = useState(10);
+  const [stopProfit, setStopProfit] = useState("");
+  const [stopLoss, setStopLoss] = useState("");
+  const [autoRunning, setAutoRunning] = useState(false);
+  const [autoStats, setAutoStats] = useState({ done: 0, net: 0 });
 
   const myBetRef = useRef(null);
   const rafRef = useRef(null);
   const timerRef = useRef(null);
   const timeoutRef = useRef(null);
+  const rotRef = useRef(0);
+  const autoRef = useRef({ running: false, remaining: 0, net: 0, done: 0, amount: 0, cashout: null, stopProfit: null, stopLoss: null });
+  const autoRoundRef = useRef(false);
   const balanceRef = useRef(balance);
   balanceRef.current = balance;
 
@@ -78,7 +87,8 @@ const CrashGame = ({ balance, setBalance }) => {
       setBalance((b) => b + win);
       playCashoutChime();
       recordRound({ game: "Crash", bet: mb.amount, mult: m, payout: win });
-      toast.success(`Ausgestiegen bei ${m.toFixed(2)}x · +${win.toLocaleString("de-DE")} €`);
+      if (mb.isAuto) autoRef.current.net += win - mb.amount;
+      if (!mb.isAuto) toast.success(`Ausgestiegen bei ${m.toFixed(2)}x · +${win.toLocaleString("de-DE")} €`);
     },
     [setBalance]
   );
@@ -93,6 +103,22 @@ const CrashGame = ({ balance, setBalance }) => {
       setPoints([]);
       setMyBet((prev) => (prev && !prev.active ? null : prev));
       setPlayers(genBots());
+      // Auto-Modus: automatisch Wette für diese Runde platzieren
+      const a = autoRef.current;
+      if (a.running && a.remaining !== 0 && !myBetRef.current?.active) {
+        const amt = Math.floor(Math.min(a.amount, balanceRef.current));
+        if (amt < 1) {
+          a.running = false;
+          setAutoRunning(false);
+          toast.error("Auto-Modus gestoppt: zu wenig Guthaben.");
+        } else {
+          setBalance((b) => b - amt);
+          const mb = { amount: amt, auto: a.cashout, active: true, isAuto: true };
+          myBetRef.current = mb;
+          setMyBet(mb);
+          autoRoundRef.current = true;
+        }
+      }
       const end = Date.now() + WAIT_MS;
       timerRef.current = setInterval(() => {
         if (cancelled) return;
@@ -138,7 +164,25 @@ const CrashGame = ({ balance, setBalance }) => {
         myBetRef.current = null;
         setMyBet({ ...mb, active: false, lost: true });
         recordRound({ game: "Crash", bet: mb.amount, mult: 0, payout: 0 });
-        toast.error(`Gecrashed bei ${crash.toFixed(2)}x — Einsatz verloren.`);
+        if (mb.isAuto) autoRef.current.net += -mb.amount;
+        if (!mb.isAuto) toast.error(`Gecrashed bei ${crash.toFixed(2)}x — Einsatz verloren.`);
+      }
+      // Auto-Modus: Runde abschließen, Stop-Bedingungen prüfen
+      if (autoRoundRef.current) {
+        autoRoundRef.current = false;
+        const a = autoRef.current;
+        a.done += 1;
+        if (a.remaining > 0) a.remaining -= 1;
+        setAutoStats({ done: a.done, net: a.net });
+        let stop = false;
+        if (a.remaining === 0) stop = true;
+        if (a.stopProfit != null && a.net >= a.stopProfit) stop = true;
+        if (a.stopLoss != null && a.net <= -a.stopLoss) stop = true;
+        if (stop && a.running) {
+          a.running = false;
+          setAutoRunning(false);
+          toast.info(`Auto-Modus beendet · ${a.done} Runden · Netto ${a.net >= 0 ? "+" : ""}${a.net.toLocaleString("de-DE")} €`);
+        }
       }
       timeoutRef.current = setTimeout(() => {
         if (!cancelled) runWaiting();
@@ -168,6 +212,44 @@ const CrashGame = ({ balance, setBalance }) => {
     toast.success(`Wette platziert: ${amount.toLocaleString("de-DE")} €`);
   };
 
+  const startAuto = () => {
+    if (autoRunning) return;
+    const amount = Math.floor(Math.max(1, betAmount));
+    if (amount > balanceRef.current) {
+      toast.error("Nicht genügend Guthaben.");
+      return;
+    }
+    const rounds = Math.max(0, Math.floor(autoRounds));
+    autoRef.current = {
+      running: true,
+      remaining: rounds > 0 ? rounds : -1,
+      net: 0,
+      done: 0,
+      amount,
+      cashout: autoCash > 1 ? autoCash : null,
+      stopProfit: stopProfit !== "" ? Math.max(0, Number(stopProfit)) : null,
+      stopLoss: stopLoss !== "" ? Math.max(0, Number(stopLoss)) : null,
+    };
+    setAutoStats({ done: 0, net: 0 });
+    setAutoRunning(true);
+    toast.success(`Auto-Modus gestartet${rounds > 0 ? ` · ${rounds} Runden` : " · endlos"}.`);
+    // Wenn wir gerade in der Wartephase sind: sofort für diese Runde mitwetten
+    if (phase === "waiting" && !myBetRef.current?.active) {
+      const amt = Math.floor(Math.min(amount, balanceRef.current));
+      setBalance((b) => b - amt);
+      const mb = { amount: amt, auto: autoRef.current.cashout, active: true, isAuto: true };
+      myBetRef.current = mb;
+      setMyBet(mb);
+      autoRoundRef.current = true;
+    }
+  };
+
+  const stopAuto = () => {
+    autoRef.current.running = false;
+    setAutoRunning(false);
+    toast.info("Auto-Modus wird nach dieser Runde gestoppt.");
+  };
+
   const last = points[points.length - 1];
   const maxT = Math.max(10000, last ? last.t * 1.12 : 10000);
   const maxM = Math.max(3, mult * 1.18);
@@ -187,12 +269,20 @@ const CrashGame = ({ balance, setBalance }) => {
       : "";
   const areaPath = linePath && last ? `${linePath} L${gx(last.t).toFixed(1)},${(H - PADB).toFixed(1)} L${PADL},${H - PADB} Z` : "";
 
-  let rocketRot = 0;
-  if (points.length > 2) {
-    const a = points[Math.max(0, points.length - 6)];
-    const b = last;
-    rocketRot = (Math.atan2(gy(b.m) - gy(a.m), gx(b.t) - gx(a.t)) * 180) / Math.PI;
+  let targetRot = rotRef.current;
+  if (points.length > 3 && last) {
+    const a = points[Math.max(0, points.length - 8)];
+    const dx = gx(last.t) - gx(a.t);
+    const dy = gy(last.m) - gy(a.m);
+    if (dx !== 0 || dy !== 0) targetRot = (Math.atan2(dy, dx) * 180) / Math.PI;
   }
+  if (phase === "waiting") {
+    rotRef.current = 0;
+  } else {
+    // exponentielle Glättung gegen Frame-Jitter (Wackeln)
+    rotRef.current = rotRef.current + (targetRot - rotRef.current) * 0.12;
+  }
+  const rocketRot = Math.round(rotRef.current * 10) / 10;
 
   const yTicks = [0, 1, 2, 3, 4].map((i) => Math.exp((Math.log(maxM) * i) / 4));
   const xTicks = [2, 4, 6, 8, 10];
@@ -217,15 +307,29 @@ const CrashGame = ({ balance, setBalance }) => {
     btnDisabled = true;
   }
 
+  const inputsLocked = mode === "auto" ? autoRunning : phase !== "waiting" || !!myBet?.active;
+  const autoCashLocked = autoRunning || (mode === "manual" && !!myBet?.active);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5" data-testid="crash-game">
       <div className="lg:col-span-4 flex flex-col gap-5">
         <div className="rounded-2xl bg-night-card border border-night-border p-5">
-          <div className="flex gap-1.5 mb-5">
-            <span className="rounded-full bg-night-elevated px-4 py-1.5 text-xs font-bold">Manuell</span>
+          <div className="flex gap-1.5 mb-5 bg-night-sidebar/60 rounded-full p-1 w-max">
             <button
-              onClick={() => toast.info("Auto-Modus folgt in Kürze.")}
-              className="rounded-full px-4 py-1.5 text-xs font-bold text-slate-500 hover:text-white transition-colors duration-300"
+              onClick={() => !autoRunning && setMode("manual")}
+              disabled={autoRunning}
+              className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors duration-300 disabled:opacity-50 ${
+                mode === "manual" ? "bg-night-elevated text-white" : "text-slate-500 hover:text-white"
+              }`}
+              data-testid="crash-manual-tab"
+            >
+              Manuell
+            </button>
+            <button
+              onClick={() => setMode("auto")}
+              className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors duration-300 ${
+                mode === "auto" ? "bg-mint text-black" : "text-slate-500 hover:text-white"
+              }`}
               data-testid="crash-auto-tab"
             >
               Auto
@@ -239,7 +343,7 @@ const CrashGame = ({ balance, setBalance }) => {
               min={1}
               value={betAmount}
               onChange={(e) => setBetAmount(Number(e.target.value))}
-              disabled={phase !== "waiting" || myBet?.active}
+              disabled={inputsLocked}
               className="flex-1 min-w-0 rounded-xl bg-night-sidebar border border-night-border px-4 py-3 font-mono font-bold text-sm focus:outline-none focus:border-mint/60 disabled:opacity-50"
               data-testid="crash-bet-input"
             />
@@ -251,7 +355,7 @@ const CrashGame = ({ balance, setBalance }) => {
               <button
                 key={label}
                 onClick={fn}
-                disabled={phase !== "waiting" || myBet?.active}
+                disabled={inputsLocked}
                 className="rounded-lg bg-night-elevated border border-night-border px-3 py-3 text-xs font-mono font-bold text-slate-300 hover:border-mint/50 disabled:opacity-40 transition-colors duration-300"
                 data-testid={`crash-bet-quick-${label.replace(/[^a-z0-9]/gi, "").toLowerCase()}`}
               >
@@ -268,7 +372,7 @@ const CrashGame = ({ balance, setBalance }) => {
               step={0.1}
               value={autoCash}
               onChange={(e) => setAutoCash(Number(e.target.value))}
-              disabled={myBet?.active}
+              disabled={autoCashLocked}
               className="flex-1 min-w-0 rounded-xl bg-night-sidebar border border-night-border px-4 py-3 font-mono font-bold text-sm focus:outline-none focus:border-mint/60 disabled:opacity-50"
               data-testid="crash-auto-cashout-input"
             />
@@ -276,7 +380,7 @@ const CrashGame = ({ balance, setBalance }) => {
               <button
                 key={v}
                 onClick={() => setAutoCash(v)}
-                disabled={myBet?.active}
+                disabled={autoCashLocked}
                 className="rounded-lg bg-night-elevated border border-night-border px-3 py-3 text-xs font-mono font-bold text-slate-300 hover:border-mint/50 disabled:opacity-40 transition-colors duration-300"
                 data-testid={`crash-auto-quick-${v}`}
               >
@@ -285,21 +389,104 @@ const CrashGame = ({ balance, setBalance }) => {
             ))}
           </div>
 
-          <button
-            onClick={phase === "running" && myBet?.active ? () => cashOut(mult) : placeBet}
-            disabled={btnDisabled}
-            className={`w-full rounded-full py-3.5 text-sm font-extrabold transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed ${
-              phase === "running" && myBet?.active
-                ? "bg-amber-400 text-black animate-deposit-glow"
-                : "bg-mint text-black hover:bg-mint-hover shadow-[0_0_22px_rgba(0,229,117,0.35)]"
-            }`}
-            data-testid="crash-place-bet-btn"
-          >
-            {btnLabel}
-          </button>
+          {mode === "auto" && (
+            <div className="mb-5 space-y-4" data-testid="crash-auto-config">
+              <div>
+                <label className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-500 block mb-2">Anzahl Wetten (0 = endlos)</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    value={autoRounds}
+                    onChange={(e) => setAutoRounds(Number(e.target.value))}
+                    disabled={autoRunning}
+                    className="flex-1 min-w-0 rounded-xl bg-night-sidebar border border-night-border px-4 py-3 font-mono font-bold text-sm focus:outline-none focus:border-mint/60 disabled:opacity-50"
+                    data-testid="crash-auto-rounds-input"
+                  />
+                  {[10, 25, 0].map((v) => (
+                    <button
+                      key={v}
+                      onClick={() => setAutoRounds(v)}
+                      disabled={autoRunning}
+                      className="rounded-lg bg-night-elevated border border-night-border px-3 py-3 text-xs font-mono font-bold text-slate-300 hover:border-mint/50 disabled:opacity-40 transition-colors duration-300"
+                    >
+                      {v === 0 ? "∞" : v}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] font-mono uppercase tracking-[0.18em] text-mint block mb-2">Stop bei Gewinn (€)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="—"
+                    value={stopProfit}
+                    onChange={(e) => setStopProfit(e.target.value)}
+                    disabled={autoRunning}
+                    className="w-full rounded-xl bg-night-sidebar border border-night-border px-4 py-3 font-mono font-bold text-sm focus:outline-none focus:border-mint/60 disabled:opacity-50"
+                    data-testid="crash-auto-stopprofit-input"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono uppercase tracking-[0.18em] text-[#FF6B7A] block mb-2">Stop bei Verlust (€)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="—"
+                    value={stopLoss}
+                    onChange={(e) => setStopLoss(e.target.value)}
+                    disabled={autoRunning}
+                    className="w-full rounded-xl bg-night-sidebar border border-night-border px-4 py-3 font-mono font-bold text-sm focus:outline-none focus:border-mint/60 disabled:opacity-50"
+                    data-testid="crash-auto-stoploss-input"
+                  />
+                </div>
+              </div>
+              {autoRunning && (
+                <div className="flex items-center justify-between rounded-xl bg-night-sidebar/60 border border-night-border px-4 py-3" data-testid="crash-auto-stats">
+                  <span className="text-xs text-slate-400">
+                    Runde <span className="font-mono font-bold text-white">{autoStats.done}</span>
+                    {autoRef.current.remaining > 0 ? <span className="text-slate-500"> / {autoStats.done + autoRef.current.remaining}</span> : <span className="text-slate-500"> / ∞</span>}
+                  </span>
+                  <span className={`font-mono text-xs font-bold ${autoStats.net >= 0 ? "text-mint" : "text-[#FF6B7A]"}`}>
+                    {autoStats.net >= 0 ? "+" : ""}{autoStats.net.toLocaleString("de-DE")} €
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {mode === "manual" ? (
+            <button
+              onClick={phase === "running" && myBet?.active ? () => cashOut(mult) : placeBet}
+              disabled={btnDisabled}
+              className={`w-full rounded-full py-3.5 text-sm font-extrabold transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed ${
+                phase === "running" && myBet?.active
+                  ? "bg-amber-400 text-black animate-deposit-glow"
+                  : "bg-mint text-black hover:bg-mint-hover shadow-[0_0_22px_rgba(0,229,117,0.35)]"
+              }`}
+              data-testid="crash-place-bet-btn"
+            >
+              {btnLabel}
+            </button>
+          ) : (
+            <button
+              onClick={autoRunning ? stopAuto : startAuto}
+              className={`w-full rounded-full py-3.5 text-sm font-extrabold transition-colors duration-300 ${
+                autoRunning
+                  ? "bg-[#FF4757] text-white hover:bg-[#ff5e6b] shadow-[0_0_22px_rgba(255,71,87,0.4)]"
+                  : "bg-mint text-black hover:bg-mint-hover shadow-[0_0_22px_rgba(0,229,117,0.35)]"
+              }`}
+              data-testid="crash-auto-start-btn"
+            >
+              {autoRunning ? "Auto-Modus stoppen" : "Auto-Modus starten"}
+            </button>
+          )}
           {myBet?.active && (
             <p className="mt-3 text-center text-xs font-mono text-slate-400" data-testid="crash-my-bet-info">
               Einsatz {myBet.amount.toLocaleString("de-DE")} €{myBet.auto ? ` · Auto @ ${myBet.auto.toFixed(2)}x` : ""}
+              {myBet.isAuto ? " · AUTO" : ""}
             </p>
           )}
         </div>
@@ -475,7 +662,7 @@ const CrashGame = ({ balance, setBalance }) => {
                 data-testid="crash-rocket"
               >
                 <motion.div
-                  className={phase === "running" ? "crash-rocket-bob w-full h-full" : "w-full h-full"}
+                  className="w-full h-full"
                   animate={phase === "crashed" ? { y: 110, rotate: rocketRot + 70, opacity: 0 } : { opacity: 1 }}
                   transition={phase === "crashed" ? { duration: 1.1, ease: "easeIn" } : { duration: 0.2 }}
                 >

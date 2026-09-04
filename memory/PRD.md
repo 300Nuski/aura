@@ -50,6 +50,11 @@
 - Blackjack v2: großer Filztisch über volles Sichtfeld (radialer Grün-Verlauf, min-h 56vh, BLACKJACK-Emblem), stark vergrößerte Karten, Dealer oben/Spieler unten mittig, Score-Badges; Seite full-width, Regeln als Leiste darunter
 - Crash-Flug v3: leuchtende grüne Flugkurve (Gradient + Glow) statt loser Rauchpunkte, Sternenhimmel-Backdrop (funkelnd), Flächenfüllung unter Kurve, Rakete sitzt sauber an Kurvenspitze (Rotation geglättet über 6 Punkte), Idle-Bob im Flug, Absturz-Animation (Rakete fällt & verblasst, Kurve/Trail rot), Graph vergrößert (H 340)
 
+## Blackjack Split/Double & Crash Auto (Juli 2026)
+- Blackjack Mehr-Hand-Engine: Verdoppeln (1 Karte, Einsatz ×2, dann Stand) & Teilen (Paare, bis 4 Hände, geteilte Asse = 1 Karte+Auto-Stand), aktive Hand hervorgehoben (Mint-Ring), pro Hand Score/Einsatz/Ergebnis, Dealer-Auflösung über alle Hände, Netto-Auszahlung
+- Crash Auto-Modus: echte Auto-Wetten (Manuell/Auto-Tabs), Anzahl Wetten (0=endlos, Presets 10/25/∞), Stop bei Gewinn/Verlust (€), Live-Stats (Runde x/y, Netto), Auto-Cashout je Runde, Start/Stop; platziert automatisch pro Wartephase
+- Crash Wackel-Fix: „Bob"-Effekt entfernt + Raketen-Rotation exponentiell geglättet (EMA 0.12) → ruhiger Flug
+
 ## Backlog / nächste Schritte
 - P1: PvP-Duelle & Jackpot-Tickets als echte Minispiele
 - P1: Crash Auto-Modus (Auto-Bet Wiederholung)
