@@ -15,6 +15,7 @@ const MATCHES = [
     score: "11 - 9",
     time: "15:00",
     viewers: "26K",
+    img: "https://images.unsplash.com/photo-1612151388040-9ec75d2de8c7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwzfHxlc3BvcnRzJTIwYXJlbmF8ZW58MHx8fGJsYWNrfDE3ODg1MjgwNzN8MA&ixlib=rb-4.1.0&q=85",
   },
   {
     id: "m2",
@@ -29,6 +30,7 @@ const MATCHES = [
     score: "VS",
     time: "13:15",
     viewers: "8K",
+    img: "https://images.unsplash.com/photo-1548686304-5c3be888a00b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwxfHxlc3BvcnRzJTIwYXJlbmF8ZW58MHx8fGJsYWNrfDE3ODg1MjgwNzN8MA&ixlib=rb-4.1.0&q=85",
   },
   {
     id: "m3",
@@ -43,6 +45,7 @@ const MATCHES = [
     score: "3 - 2",
     time: "15:00",
     viewers: "19K",
+    img: "https://images.unsplash.com/photo-1527690789675-4ea7d8da4fe3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzOTB8MHwxfHNlYXJjaHwzfHxnYW1pbmclMjBkYXJrfGVufDB8fHxibGFja3wxNzg4NTI4MDc5fDA&ixlib=rb-4.1.0&q=85",
   },
 ];
 
@@ -67,9 +70,22 @@ const TopMatches = () => (
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.55, delay: i * 0.08 }}
           whileHover={{ y: -4 }}
-          className="rounded-2xl bg-night-card border border-night-border hover:border-mint/40 p-5 transition-colors duration-300"
+          className="relative overflow-hidden rounded-2xl bg-night-card border border-night-border hover:border-mint/40 p-5 transition-colors duration-300"
           data-testid={`match-card-${m.id}`}
         >
+          {m.img && (
+            <>
+              <img
+                src={m.img}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none select-none"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-night-card via-night-card/85 to-night-card/60 pointer-events-none" />
+            </>
+          )}
+          <div className="relative z-10">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-sm font-bold">{m.game}</span>
             {m.live ? (
@@ -111,6 +127,7 @@ const TopMatches = () => (
               <Eye className="w-3.5 h-3.5" />
               {m.viewers}
             </span>
+          </div>
           </div>
         </motion.div>
       ))}

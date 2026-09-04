@@ -23,6 +23,16 @@ const HeroBanner = ({ onClaim }) => {
       className="relative overflow-hidden rounded-2xl border border-mint/25 bg-gradient-to-br from-[#123524] via-night-card to-[#101a2e] p-6 sm:p-10 mb-6"
       data-testid="hero-banner"
     >
+      {/* Cinematisches Hintergrundbild */}
+      <img
+        src="https://images.unsplash.com/photo-1645180804518-5dc3e353e647?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwxfHxjYXNpbm8lMjByb3VsZXR0ZSUyMG5lb258ZW58MHx8fGJsYWNrfDE3ODg1MjgwMjB8MA&ixlib=rb-4.1.0&q=85"
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        className="absolute inset-0 w-full h-full object-cover opacity-35 pointer-events-none select-none"
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0b1f16]/90 via-night-card/85 to-[#0a1526]/90 pointer-events-none" />
+
       <div className="absolute -right-20 -top-24 w-[340px] h-[340px] opacity-25 pointer-events-none animate-spin-slower" aria-hidden="true">
         <svg viewBox="0 0 300 300" className="w-full h-full">
           <circle cx="150" cy="150" r="140" fill="none" stroke="#00E575" strokeWidth="1.5" strokeDasharray="6 12" />

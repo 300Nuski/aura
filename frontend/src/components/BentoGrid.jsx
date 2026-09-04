@@ -26,6 +26,7 @@ const BentoGrid = () => {
       cta: "Jetzt duellieren",
       icon: Flame,
       iconCls: "text-[#2E7CFF]",
+      img: "https://images.unsplash.com/photo-1598550487031-0898b4852123?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwyfHxlc3BvcnRzJTIwYXJlbmF8ZW58MHx8fGJsYWNrfDE3ODg1MjgwNzN8MA&ixlib=rb-4.1.0&q=85",
       onClick: () => toast.info("PvP-Duelle — Demo folgt in Kürze."),
       testid: "bento-card-pvp",
     },
@@ -41,6 +42,7 @@ const BentoGrid = () => {
       cta: "Tisch öffnen",
       icon: Disc,
       iconCls: "text-[#E84118]",
+      img: "https://images.unsplash.com/photo-1611786431136-bdd6744ed72d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHwxfHxyb3VsZXR0ZSUyMHRhYmxlfGVufDB8fHxibGFja3wxNzg4NTI4MDMxfDA&ixlib=rb-4.1.0&q=85",
       onClick: () => navigate("/roulette"),
       testid: "bento-card-roulette",
     },
@@ -56,6 +58,7 @@ const BentoGrid = () => {
       cta: "Ticket kaufen",
       icon: Trophy,
       iconCls: "text-[#8C3BFF]",
+      img: "https://images.unsplash.com/photo-1567771097667-472adfa6945a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxNzV8MHwxfHNlYXJjaHwzfHxnb2xkJTIwY29pbnN8ZW58MHx8fGJsYWNrfDE3ODg1MjgwNDJ8MA&ixlib=rb-4.1.0&q=85",
       onClick: () => toast.info("Jackpot-Tickets — Demo folgt in Kürze."),
       testid: "bento-card-jackpot",
     },
@@ -71,6 +74,7 @@ const BentoGrid = () => {
       cta: "Karten geben",
       icon: Layers,
       iconCls: "text-mint",
+      img: "https://images.unsplash.com/photo-1597042962047-005b63a5eb25?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwxfHxwb2tlciUyMGNoaXBzfGVufDB8fHxibGFja3wxNzg4NTI4MDM2fDA&ixlib=rb-4.1.0&q=85",
       onClick: () => navigate("/blackjack"),
       testid: "bento-card-blackjack",
     },
@@ -86,6 +90,7 @@ const BentoGrid = () => {
       cta: "Rakete starten",
       icon: Rocket,
       iconCls: "text-[#FF9F1C]",
+      img: "https://images.unsplash.com/photo-1519326844852-704caea5679e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzOTB8MHwxfHNlYXJjaHwyfHxnYW1pbmclMjBkYXJrfGVufDB8fHxibGFja3wxNzg4NTI4MDc5fDA&ixlib=rb-4.1.0&q=85",
       onClick: () => navigate("/crash"),
       testid: "bento-card-crash",
     },
@@ -105,6 +110,18 @@ const BentoGrid = () => {
           className={`group relative overflow-hidden rounded-2xl border border-night-border bg-gradient-to-br ${c.gradient} ${c.border} ${c.span} p-5 sm:p-6 text-left transition-colors duration-300 min-h-[170px] flex flex-col justify-between`}
           data-testid={c.testid}
         >
+          {c.img && (
+            <>
+              <img
+                src={c.img}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover opacity-25 group-hover:opacity-40 group-hover:scale-105 transition-all duration-500 pointer-events-none select-none"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-night-card via-night-card/75 to-night-card/40 pointer-events-none" />
+            </>
+          )}
           <c.icon className={`absolute -right-5 -bottom-6 w-32 h-32 opacity-[0.13] group-hover:opacity-25 group-hover:scale-110 transition-all duration-500 ${c.iconCls}`} strokeWidth={1.2} />
           <div className="relative z-10">
             <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[9px] font-mono font-bold tracking-wider ${c.badgeCls}`}>
