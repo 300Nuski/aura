@@ -45,6 +45,11 @@
 - Candy-Design: Zuckerstangen-Rahmen, Lila-Verlauf, Twinkle-Sparkles, Screen-Shake + Splash bei Big Win (≥10×), Gewinn-Sounds
 - Verlinkt: Sidebar „Slots", Top-Slots-Karte „Sweet Bonanza" (Tag SPIELBAR)
 
+## UI-Bilder & Spiel-Upgrades (Juli 2026)
+- Lobby-Bilder: cinematische Foto-Hintergründe (dunkles Overlay) in HeroBanner, allen 5 Bento-Karten & 3 Top-Matches-Karten (Unsplash) → professioneller Look
+- Blackjack v2: großer Filztisch über volles Sichtfeld (radialer Grün-Verlauf, min-h 56vh, BLACKJACK-Emblem), stark vergrößerte Karten, Dealer oben/Spieler unten mittig, Score-Badges; Seite full-width, Regeln als Leiste darunter
+- Crash-Flug v3: leuchtende grüne Flugkurve (Gradient + Glow) statt loser Rauchpunkte, Sternenhimmel-Backdrop (funkelnd), Flächenfüllung unter Kurve, Rakete sitzt sauber an Kurvenspitze (Rotation geglättet über 6 Punkte), Idle-Bob im Flug, Absturz-Animation (Rakete fällt & verblasst, Kurve/Trail rot), Graph vergrößert (H 340)
+
 ## Backlog / nächste Schritte
 - P1: PvP-Duelle & Jackpot-Tickets als echte Minispiele
 - P1: Crash Auto-Modus (Auto-Bet Wiederholung)

@@ -23,31 +23,28 @@ const BlackjackPage = ({ balance, setBalance }) => {
         Zurück zur Lobby
       </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
-        <div className="lg:col-span-2">
-          <BlackjackGame balance={balance} setBalance={setBalance} />
-        </div>
-        <aside className="rounded-2xl bg-night-card border border-night-border p-5 sm:p-6" data-testid="blackjack-rules">
-          <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-mint font-bold mb-1">Regeln</p>
-          <h3 className="font-display text-lg font-extrabold mb-4 flex items-center gap-2">
+      <BlackjackGame balance={balance} setBalance={setBalance} />
+
+      <aside className="mt-5 rounded-2xl bg-night-card border border-night-border p-5 sm:p-6" data-testid="blackjack-rules">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <h3 className="font-display text-lg font-extrabold flex items-center gap-2 shrink-0">
             <Layers className="w-4 h-4 text-mint" />
             So wird gespielt
           </h3>
-          <ul className="space-y-2.5 mb-5">
+          <ul className="grid grid-cols-2 md:grid-cols-4 gap-3 flex-1">
             {RULES.map(([label, val]) => (
-              <li key={label} className="flex items-center justify-between text-sm">
-                <span className="text-slate-400">{label}</span>
-                <span className="font-mono font-bold text-mint">{val}</span>
+              <li key={label} className="rounded-xl bg-night-elevated border border-night-border px-3 py-2.5">
+                <p className="text-[11px] text-slate-400 leading-tight">{label}</p>
+                <p className="font-mono font-bold text-mint text-sm mt-0.5">{val}</p>
               </li>
             ))}
           </ul>
-          <div className="h-px bg-night-bordersub mb-4" />
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Komme näher an 21 als der Dealer, ohne dich zu überkaufen. Asse zählen 1 oder 11 —
-            die Engine wählt automatisch den besten Wert.
-          </p>
-        </aside>
-      </div>
+        </div>
+        <p className="text-xs text-slate-500 leading-relaxed mt-4">
+          Komme näher an 21 als der Dealer, ohne dich zu überkaufen. Asse zählen 1 oder 11 —
+          die Engine wählt automatisch den besten Wert.
+        </p>
+      </aside>
     </motion.div>
   );
 };

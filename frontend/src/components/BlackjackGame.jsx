@@ -38,22 +38,22 @@ const score = (cards) => {
 
 const Card = ({ card, hidden, index }) => (
   <motion.div
-    initial={{ y: -36, opacity: 0, rotate: -6 }}
+    initial={{ y: -48, opacity: 0, rotate: -6 }}
     animate={{ y: 0, opacity: 1, rotate: 0 }}
-    transition={{ duration: 0.45, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-    className={`w-12 h-[68px] sm:w-14 sm:h-20 rounded-lg border shadow-[0_10px_24px_rgba(0,0,0,0.5)] flex flex-col justify-between p-1.5 ${
+    transition={{ duration: 0.45, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+    className={`w-16 h-24 sm:w-20 sm:h-28 md:w-24 md:h-36 rounded-xl border shadow-[0_14px_30px_rgba(0,0,0,0.55)] flex flex-col justify-between p-2 sm:p-2.5 shrink-0 ${
       hidden ? "bg-night-sidebar border-mint/50" : "bg-white border-slate-200"
     }`}
   >
     {hidden ? (
-      <div className="w-full h-full rounded border border-mint/30 flex items-center justify-center">
-        <span className="text-mint text-lg">◆</span>
+      <div className="w-full h-full rounded-lg border border-mint/30 flex items-center justify-center bg-gradient-to-br from-night-sidebar to-night-elevated">
+        <span className="text-mint text-2xl sm:text-3xl">◆</span>
       </div>
     ) : (
       <>
-        <span className={`font-display text-sm sm:text-base font-bold leading-none ${card.red ? "text-red-600" : "text-slate-900"}`}>{card.rank}</span>
-        <span className={`self-center text-lg sm:text-xl ${card.red ? "text-red-600" : "text-slate-900"}`}>{card.s}</span>
-        <span className={`font-display text-sm sm:text-base font-bold leading-none self-end rotate-180 ${card.red ? "text-red-600" : "text-slate-900"}`}>{card.rank}</span>
+        <span className={`font-display text-lg sm:text-xl md:text-2xl font-bold leading-none ${card.red ? "text-red-600" : "text-slate-900"}`}>{card.rank}</span>
+        <span className={`self-center text-2xl sm:text-3xl md:text-4xl ${card.red ? "text-red-600" : "text-slate-900"}`}>{card.s}</span>
+        <span className={`font-display text-lg sm:text-xl md:text-2xl font-bold leading-none self-end rotate-180 ${card.red ? "text-red-600" : "text-slate-900"}`}>{card.rank}</span>
       </>
     )}
   </motion.div>
@@ -171,35 +171,54 @@ const BlackjackGame = ({ balance, setBalance }) => {
         </div>
       </div>
 
-      <div className="rounded-xl bg-[#0D2818] border border-mint/20 p-4 sm:p-5 mb-5 min-h-[220px] shadow-[inset_0_0_60px_rgba(0,0,0,0.45)]">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400">Dealer</span>
-          <span className="font-mono text-sm font-bold text-mint" data-testid="blackjack-dealer-score">
-            {dealer.length ? dealerVisibleScore : "—"}
-          </span>
+      <div
+        className="relative rounded-3xl border border-mint/25 mb-5 overflow-hidden min-h-[56vh] shadow-[inset_0_0_120px_rgba(0,0,0,0.6)]"
+        style={{ background: "radial-gradient(ellipse at 50% 38%, #14512f 0%, #0d3a22 46%, #082515 100%)" }}
+        data-testid="blackjack-table"
+      >
+        {/* Filz-Bögen & Emblem */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="w-[80%] h-[70%] rounded-[50%] border border-mint/15" />
         </div>
-        <div className="flex gap-2 min-h-[72px] sm:min-h-[84px] mb-5" data-testid="blackjack-dealer-hand">
-          <AnimatePresence>
-            {dealer.map((c, i) => (
-              <Card key={`d-${i}-${c.rank}${c.s}`} card={c} hidden={phase === "player" && i === 1} index={i} />
-            ))}
-          </AnimatePresence>
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center">
+          <span className="font-display text-2xl sm:text-4xl font-black tracking-[0.25em] text-mint/10 select-none">BLACKJACK</span>
+          <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] text-mint/20 mt-1">zahlt 3 : 2 · Dealer steht ab 17</p>
         </div>
 
-        <div className="h-px bg-mint/15 mb-5" />
+        <div className="relative z-10 flex flex-col justify-between h-full min-h-[56vh] p-5 sm:p-8">
+          {/* Dealer */}
+          <div>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200/70">Dealer</span>
+              <span className="rounded-full bg-black/45 border border-mint/30 px-3.5 py-1 font-mono text-base sm:text-lg font-bold text-mint tabular-nums" data-testid="blackjack-dealer-score">
+                {dealer.length ? dealerVisibleScore : "—"}
+              </span>
+            </div>
+            <div className="flex justify-center gap-2.5 sm:gap-3 min-h-[96px] sm:min-h-[144px]" data-testid="blackjack-dealer-hand">
+              <AnimatePresence>
+                {dealer.map((c, i) => (
+                  <Card key={`d-${i}-${c.rank}${c.s}`} card={c} hidden={phase === "player" && i === 1} index={i} />
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
 
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400">Deine Hand</span>
-          <span className="font-mono text-sm font-bold text-mint" data-testid="blackjack-player-score">
-            {player.length ? playerScore : "—"}
-          </span>
-        </div>
-        <div className="flex flex-wrap gap-2 min-h-[72px] sm:min-h-[84px]" data-testid="blackjack-player-hand">
-          <AnimatePresence>
-            {player.map((c, i) => (
-              <Card key={`p-${i}-${c.rank}${c.s}`} card={c} hidden={false} index={i} />
-            ))}
-          </AnimatePresence>
+          {/* Spieler */}
+          <div>
+            <div className="flex justify-center gap-2.5 sm:gap-3 min-h-[96px] sm:min-h-[144px] flex-wrap mb-4" data-testid="blackjack-player-hand">
+              <AnimatePresence>
+                {player.map((c, i) => (
+                  <Card key={`p-${i}-${c.rank}${c.s}`} card={c} hidden={false} index={i} />
+                ))}
+              </AnimatePresence>
+            </div>
+            <div className="flex items-center justify-center gap-3">
+              <span className="text-[11px] font-mono uppercase tracking-[0.22em] text-emerald-200/70">Deine Hand</span>
+              <span className="rounded-full bg-black/45 border border-mint/30 px-3.5 py-1 font-mono text-base sm:text-lg font-bold text-mint tabular-nums" data-testid="blackjack-player-score">
+                {player.length ? playerScore : "—"}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

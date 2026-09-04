@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Users, Wifi } from "lucide-react";
@@ -12,11 +12,11 @@ const GROWTH = 0.00013;
 const WAIT_MS = 5000;
 
 const W = 600;
-const H = 300;
-const PADL = 38;
+const H = 340;
+const PADL = 40;
 const PADB = 28;
-const PADT = 16;
-const PADR = 14;
+const PADT = 20;
+const PADR = 16;
 
 const genCrash = () => Math.min(100, Math.max(1, Math.floor((0.99 / (1 - Math.random())) * 100) / 100));
 
@@ -55,6 +55,18 @@ const CrashGame = ({ balance, setBalance }) => {
   const timeoutRef = useRef(null);
   const balanceRef = useRef(balance);
   balanceRef.current = balance;
+
+  const stars = useMemo(
+    () =>
+      Array.from({ length: 54 }, (_, i) => ({
+        x: +(PADL + Math.random() * (W - PADL - PADR)).toFixed(1),
+        y: +(PADT + Math.random() * (H - PADT - PADB)).toFixed(1),
+        r: +(Math.random() * 1.1 + 0.3).toFixed(2),
+        o: +(Math.random() * 0.45 + 0.12).toFixed(2),
+        d: +((i % 12) * 0.28).toFixed(2),
+      })),
+    []
+  );
 
   const cashOut = useCallback(
     (m) => {
@@ -165,12 +177,19 @@ const CrashGame = ({ balance, setBalance }) => {
   const sampled = points.filter((_, i) => i % 4 === 0);
   const smokePuffs = sampled.map((p, j) => {
     const age = sampled.length > 1 ? 1 - j / (sampled.length - 1) : 0;
-    return { ...p, r: 3.5 + age * 11, o: 0.3 * (1 - age * 0.78) };
+    return { ...p, r: 3 + age * 9, o: 0.2 * (1 - age * 0.8) };
   });
 
+  const curveColor = phase === "crashed" ? "#FF4757" : "#00E575";
+  const linePath =
+    points.length > 1
+      ? points.map((p, i) => `${i === 0 ? "M" : "L"}${gx(p.t).toFixed(1)},${gy(p.m).toFixed(1)}`).join(" ")
+      : "";
+  const areaPath = linePath && last ? `${linePath} L${gx(last.t).toFixed(1)},${(H - PADB).toFixed(1)} L${PADL},${H - PADB} Z` : "";
+
   let rocketRot = 0;
-  if (points.length > 1) {
-    const a = points[points.length - 2];
+  if (points.length > 2) {
+    const a = points[Math.max(0, points.length - 6)];
     const b = last;
     rocketRot = (Math.atan2(gy(b.m) - gy(a.m), gx(b.t) - gx(a.t)) * 180) / Math.PI;
   }
@@ -367,7 +386,35 @@ const CrashGame = ({ balance, setBalance }) => {
                 <filter id="smoke-blur" x="-40%" y="-40%" width="180%" height="180%">
                   <feGaussianBlur stdDeviation="4.5" />
                 </filter>
+                <filter id="line-glow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="3" result="b" />
+                  <feMerge>
+                    <feMergeNode in="b" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <linearGradient id="crash-area-run" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#00E575" stopOpacity="0.32" />
+                  <stop offset="100%" stopColor="#00E575" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="crash-area-crash" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#FF4757" stopOpacity="0.32" />
+                  <stop offset="100%" stopColor="#FF4757" stopOpacity="0" />
+                </linearGradient>
+                <radialGradient id="crash-sky" cx="0.3" cy="0.15" r="1">
+                  <stop offset="0%" stopColor="#0e1b33" />
+                  <stop offset="100%" stopColor="#080b16" />
+                </radialGradient>
               </defs>
+
+              {/* Weltraum-Hintergrund + Sternenfeld */}
+              <rect x={PADL} y={PADT} width={W - PADL - PADR} height={H - PADT - PADB} rx="10" fill="url(#crash-sky)" />
+              <g>
+                {stars.map((s, i) => (
+                  <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#93c5fd" opacity={s.o} className="crash-star" style={{ animationDelay: `${s.d}s` }} />
+                ))}
+              </g>
+
               {yTicks.map((m, i) => (
                 <g key={i}>
                   <line x1={PADL} y1={gy(m)} x2={W - PADR} y2={gy(m)} stroke="#1B202E" strokeWidth="1" strokeDasharray="3 6" />
@@ -381,6 +428,11 @@ const CrashGame = ({ balance, setBalance }) => {
                   {s}s
                 </text>
               ))}
+
+              {/* Flächenfüllung unter der Flugkurve */}
+              {areaPath && <path d={areaPath} fill={`url(#crash-area-${phase === "crashed" ? "crash" : "run"})`} />}
+
+              {/* Rauch-Trail */}
               {smokePuffs.length > 1 && (
                 <g filter="url(#smoke-blur)">
                   {smokePuffs.map((p, j) => (
@@ -395,19 +447,44 @@ const CrashGame = ({ balance, setBalance }) => {
                   ))}
                 </g>
               )}
+
+              {/* Leuchtende Flugkurve */}
+              {linePath && (
+                <path
+                  d={linePath}
+                  fill="none"
+                  stroke={curveColor}
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#line-glow)"
+                  data-testid="crash-curve-line"
+                />
+              )}
+
+              {/* Leuchtpunkt an der Spitze */}
+              {last && phase !== "waiting" && (
+                <circle cx={gx(last.t)} cy={gy(last.m)} r="4" fill="#FFFFFF" filter="url(#line-glow)" />
+              )}
             </svg>
 
             {points.length > 1 && phase !== "waiting" && (
               <div
-                className="absolute w-[92px] h-[64px] -ml-[46px] -mt-[32px] pointer-events-none"
+                className="absolute w-[96px] h-[68px] -ml-[48px] -mt-[34px] pointer-events-none"
                 style={{ left: `${(gx(last.t) / W) * 100}%`, top: `${(gy(last.m) / H) * 100}%` }}
                 data-testid="crash-rocket"
               >
-                <RocketShip
-                  thrusting={phase === "running"}
-                  className={`w-full h-full drop-shadow-[0_0_16px_rgba(34,211,238,0.55)] ${phase === "crashed" ? "opacity-60" : ""}`}
-                  style={{ transform: `rotate(${rocketRot}deg)` }}
-                />
+                <motion.div
+                  className={phase === "running" ? "crash-rocket-bob w-full h-full" : "w-full h-full"}
+                  animate={phase === "crashed" ? { y: 110, rotate: rocketRot + 70, opacity: 0 } : { opacity: 1 }}
+                  transition={phase === "crashed" ? { duration: 1.1, ease: "easeIn" } : { duration: 0.2 }}
+                >
+                  <RocketShip
+                    thrusting={phase === "running"}
+                    className="w-full h-full drop-shadow-[0_0_18px_rgba(34,211,238,0.6)]"
+                    style={{ transform: `rotate(${rocketRot}deg)` }}
+                  />
+                </motion.div>
               </div>
             )}
 
